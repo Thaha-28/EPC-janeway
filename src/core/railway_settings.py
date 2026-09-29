@@ -104,11 +104,16 @@ TEMPLATES = [
     },
 ]
 
-# Email: SMTP when JANEWAY_EMAIL_HOST is set (required for registration
-# activation links and password resets), console backend otherwise.
-# For Gmail: host smtp.gmail.com, port 587, user = address, password = app
-# password, TLS on. For Resend/SMTP: host smtp.resend.com, port 587.
-if os.environ.get("JANEWAY_EMAIL_HOST"):
+# Email: Resend HTTPS API preferred (Railway blocks outbound SMTP ports),
+# plain SMTP when JANEWAY_EMAIL_HOST is set, console backend otherwise.
+# Required for registration activation links and password resets.
+if os.environ.get("JANEWAY_RESEND_API_KEY"):
+    EMAIL_BACKEND = "anymail.backends.resend.EmailBackend"
+    ANYMAIL = {"RESEND_API_KEY": os.environ["JANEWAY_RESEND_API_KEY"]}
+    DEFAULT_FROM_EMAIL = os.environ.get(
+        "JANEWAY_FROM_EMAIL", "noreply@epc-journal.org"
+    )
+elif os.environ.get("JANEWAY_EMAIL_HOST"):
     EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = os.environ["JANEWAY_EMAIL_HOST"]
     EMAIL_PORT = int(os.environ.get("JANEWAY_EMAIL_PORT", "587"))
