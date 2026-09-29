@@ -215,16 +215,17 @@ input:focus, textarea:focus, select:focus {
 
 /* Footer */
 .main-footer {
-  background: var(--epc-ink);
+  background: var(--epc-ink) !important;
   color: rgba(255, 255, 255, 0.75);
   border-top: none;
   margin-top: 3rem;
-  padding-top: 2.2rem;
-  padding-bottom: 2.2rem;
+  padding-top: 2.4rem;
+  padding-bottom: 2.4rem;
+  max-width: none;
 }
 
 .main-footer a { color: #fff; }
-.main-footer a:hover { color: rgba(255, 255, 255, 0.7); }
+.main-footer a:hover { color: rgba(255, 255, 255, 0.65); }
 .main-footer h1, .main-footer h2, .main-footer h3, .main-footer h4 {
   color: #fff;
   font-size: 0.78rem;
@@ -233,7 +234,74 @@ input:focus, textarea:focus, select:focus {
   font-family: var(--epc-sans);
 }
 
-.main-footer .logo-wrapper { background: transparent !important; }
+.main-footer .logo-wrapper {
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main-footer .logo-wrapper svg,
+.main-footer .logo-wrapper img {
+  max-height: 64px;
+  width: auto;
+  max-width: 200px;
+}
+
+.main-footer p { font-size: 0.85rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
+.main-footer p:empty { display: none; }
+
+.main-footer .inline-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.1rem;
+  font-size: 0.83rem;
+}
+
+.main-footer .large-text-right .inline-list { justify-content: flex-end; }
+
+.main-footer .inline-list-bar li {
+  border: none;
+  padding: 0;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Header branding */
+.header-image-bar img.top-bar-image,
+img.top-bar-image {
+  max-height: 46px;
+  width: auto;
+  border-radius: 6px;
+}
+
+.top-bar .header-image-bar svg {
+  max-height: 46px;
+  width: auto;
+}
+
+/* Skip link */
+.skip-container a {
+  background: var(--epc-ink);
+  color: #fff;
+  border-radius: 0 0 8px 0;
+  padding: 0.5rem 1rem;
+}
+
+/* Journal homepage hero (CMS content blocks) */
+.journal-home, .press-home { padding-top: 1.5rem; }
+
+/* News + listing polish */
+.news-item h2, .news-item h3 { font-size: 1.15rem; }
+.issue-block h2, .issue-block h3 { font-size: 1.1rem; margin-bottom: 0.3rem; }
+
+/* Manager/staff chrome */
+.side-nav { background: #fff; border: 1px solid var(--epc-line); border-radius: var(--epc-radius); padding: 0.5rem; }
+.tabs { border: none; }
+.tabs-title > a { border-radius: 8px 8px 0 0; font-size: 0.85rem; }
+.tabs-title.is-active > a, .tabs-title > a[aria-selected="true"] { background: var(--epc-ink); color: #fff; }
 
 /* Content measure */
 .row .columns .page-content, .cms-page {

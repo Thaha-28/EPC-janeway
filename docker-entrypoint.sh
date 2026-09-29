@@ -105,6 +105,43 @@ if journal.domain:
 if journal.name != 'Environmental Processes and Chemistry':
     journal.name = 'Environmental Processes and Chemistry'
     print('journal name set')
+# No real ISSNs yet: blank them so the footer does not show placeholders.
+if journal.issn:
+    journal.issn = ''
+    print('journal issn cleared')
+if journal.print_issn:
+    journal.print_issn = ''
+    print('print issn cleared')
+from utils import setting_handler
+setting_handler.save_setting('general', 'publisher_name', journal, 'Environmental Processes and Chemistry')
+# Press footer middle column content.
+if not press.footer_description:
+    press.footer_description = 'Diamond open access publishing in environmental chemistry and process science. All content is published under a Creative Commons Attribution (CC BY) licence.'
+    press.save()
+    print('press footer description set')
+# EPC branding: press thumbnail (header/footer logo) + journal header/footer
+# images, from the committed deploy/epc-logo.svg.
+import shutil as _shutil
+from django.core.files.base import ContentFile as _ContentFile
+_press_dir = _os.path.join(_settings.BASE_DIR, 'files', 'press')
+_os.makedirs(_press_dir, exist_ok=True)
+_press_logo = _os.path.join(_press_dir, 'epc-logo.svg')
+if not _os.path.exists(_press_logo):
+    _shutil.copy('deploy/epc-logo.svg', _press_logo)
+    print('press logo file installed')
+with open('deploy/epc-logo.svg', 'rb') as _lf:
+    _svg = _lf.read()
+_thumb, _tc = core_models.File.objects.get_or_create(uuid_filename='epc-logo.svg', defaults={'mime_type': 'image/svg+xml', 'original_filename': 'epc-logo.svg', 'label': 'EPC logo'})
+if press.thumbnail_image_id != _thumb.pk:
+    press.thumbnail_image = _thumb
+    press.save()
+    print('press thumbnail set')
+if not journal.header_image:
+    journal.header_image.save('epc-logo.svg', _ContentFile(_svg), save=True)
+    print('journal header image set')
+if not journal.press_image_override:
+    journal.press_image_override.save('epc-logo.svg', _ContentFile(_svg), save=True)
+    print('journal footer image set')
 " || echo "WARNING: site bootstrap failed (continuing)"
 
 # Seed EPC demo content (idempotent, no-op if journal missing).

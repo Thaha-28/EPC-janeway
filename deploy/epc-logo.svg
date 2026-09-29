@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 300 88" role="img" aria-label="EPC - Environmental Processes and Chemistry">
+  <rect x="2" y="2" width="296" height="84" rx="16" fill="#ffffff" stroke="#d8d9da" stroke-width="2"/>
+  <g fill="none" stroke="#1c1d1e" stroke-width="2.5" stroke-linecap="round">
+    <circle cx="34" cy="30" r="6" fill="#1c1d1e" stroke="none"/>
+    <circle cx="52" cy="52" r="4.5" fill="#1c1d1e" stroke="none"/>
+    <circle cx="26" cy="60" r="3.5" fill="#0f766e" stroke="none"/>
+    <line x1="38" y1="35" x2="48" y2="48"/>
+    <line x1="45" y1="54" x2="31" y2="58"/>
+  </g>
+  <text x="70" y="52" font-family="Georgia, 'Times New Roman', serif" font-size="38" font-weight="bold" fill="#1c1d1e" letter-spacing="2">EPC</text>
+  <text x="71" y="70" font-family="Arial, Helvetica, sans-serif" font-size="9.5" fill="#767676" letter-spacing="1.6">ENVIRONMENTAL PROCESSES AND CHEMISTRY</text>
+</svg>
