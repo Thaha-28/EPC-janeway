@@ -133,19 +133,31 @@ for spec in ARTICLES:
     )
     if created:
         print("article created:", article.pk, article.title[:60])
-    for author_spec in spec["authors"]:
+    for order, author_spec in enumerate(spec["authors"]):
         account = author_accounts[author_spec["email"]]
         if article.owner_id is None:
             article.owner = account
             article.correspondence_author = account
             article.save()
-        account.snapshot_as_author(article)
-        submission_models.FrozenAuthor.objects.filter(
-            article=article, author=account,
-        ).update(institution=author_spec["institution"])
+        # Direct FrozenAuthor (snapshot_as_author needs role fixtures).
+        fa, fa_created = submission_models.FrozenAuthor.objects.get_or_create(
+            article=article,
+            author=account,
+            defaults={
+                "first_name": author_spec["first"],
+                "last_name": author_spec["last"],
+                "frozen_email": author_spec["email"],
+                "order": order,
+            },
+        )
+        if fa_created and author_spec.get("institution"):
+            fa.institution = author_spec["institution"]
     for word in spec["keywords"]:
         keyword, _ = submission_models.Keyword.objects.get_or_create(word=word)
-        article.keywords.add(keyword)
+        if not submission_models.KeywordArticle.objects.filter(
+            article=article, keyword=keyword,
+        ).exists():
+            article.keywords.add(keyword)
     issues[spec["issue"]].articles.add(article)
 
 if journal.current_issue_id is None:
