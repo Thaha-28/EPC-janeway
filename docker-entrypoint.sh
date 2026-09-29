@@ -30,6 +30,9 @@ fi
 echo "Running migrations..."
 python src/manage.py migrate --noinput
 
+echo "Building theme assets (OLH/material/clean SCSS+JS)..."
+python src/manage.py build_assets || echo "WARNING: build_assets failed (continuing)"
+
 echo "Collecting static files..."
 python src/manage.py collectstatic --noinput
 
