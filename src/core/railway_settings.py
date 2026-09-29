@@ -21,7 +21,7 @@ ALLOWED_HOSTS = ["*"]
 ROOT_URLCONF = "core.railway_urls"
 
 # Media location (Railway volume mount point, if attached).
-MEDIA_ROOT = os.environ.get("JANEWAY_MEDIA_ROOT", MEDIA_ROOT)
+MEDIA_ROOT = os.environ.get("JANEWAY_MEDIA_ROOT", os.path.join(BASE_DIR, "media"))
 
 # Railway terminates TLS at its edge proxy and forwards plain HTTP with
 # X-Forwarded-Proto. Without these, Django sees insecure requests from a
