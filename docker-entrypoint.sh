@@ -75,12 +75,15 @@ from utils import install
 domain = '$SITE_DOMAIN'
 install.update_settings(management_command=False)
 # Role fixtures (utils/install/roles.json) are required for registration
-# (add_account_role) and many staff flows. Same source as install_janeway.
-if not core_models.Role.objects.exists():
-    call_command('loaddata', 'src/utils/install/roles.json', verbosity=0)
-    print('roles loaded:', core_models.Role.objects.count())
-else:
-    print('roles exist:', core_models.Role.objects.count())
+# (add_account_role) and many staff flows. get_or_create by slug keeps this
+# idempotent (plain loaddata would duplicate rows on every boot).
+import json as _json, os as _os
+from django.conf import settings as _settings
+with open(_os.path.join(_settings.BASE_DIR, 'utils/install/roles.json')) as _f:
+    _roles = _json.load(_f)
+for _r in _roles:
+    core_models.Role.objects.get_or_create(slug=_r['fields']['slug'], defaults={'name': _r['fields']['name']})
+print('roles exist:', core_models.Role.objects.count())
 press, created = press_models.Press.objects.get_or_create(domain=domain, defaults={'name': 'EPC Press', 'main_contact': 'editors@epc-journal.org'})
 print('press created:', domain) if created else print('press exists:', press.name)
 journal = journal_models.Journal.objects.filter(code='epc').first()
