@@ -20,6 +20,9 @@ ALLOWED_HOSTS = ["*"]
 # Serve /media/ from Django (no nginx on Railway).
 ROOT_URLCONF = "core.railway_urls"
 
+# Media location (Railway volume mount point, if attached).
+MEDIA_ROOT = os.environ.get("JANEWAY_MEDIA_ROOT", MEDIA_ROOT)
+
 # Railway terminates TLS at its edge proxy and forwards plain HTTP with
 # X-Forwarded-Proto. Without these, Django sees insecure requests from a
 # secure origin and rejects every POST with "CSRF verification failed".

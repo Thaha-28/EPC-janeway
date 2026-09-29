@@ -137,10 +137,15 @@ if press.thumbnail_image_id != _thumb.pk:
     press.thumbnail_image = _thumb
     press.save()
     print('press thumbnail set')
-if not journal.header_image:
+import os.path as _op
+if not journal.header_image or not _op.exists(journal.header_image.path):
+    if journal.header_image:
+        journal.header_image.delete(save=False)
     journal.header_image.save('epc-logo.svg', _ContentFile(_svg), save=True)
     print('journal header image set')
-if not journal.press_image_override:
+if not journal.press_image_override or not _op.exists(journal.press_image_override.path):
+    if journal.press_image_override:
+        journal.press_image_override.delete(save=False)
     journal.press_image_override.save('epc-logo.svg', _ContentFile(_svg), save=True)
     print('journal footer image set')
 " || echo "WARNING: site bootstrap failed (continuing)"
