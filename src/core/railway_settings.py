@@ -1,31 +1,47 @@
 """Minimal production overlay for plain Janeway on Railway.
 
 Loaded via JANEWAY_SETTINGS_MODULE=core.railway_settings.
-Everything else is stock upstream Janeway behaviour.
+
+Follows the upstream convention (see core/example_settings.py): define
+ONLY overrides here. Janeway merges INSTALLED_APPS/MIDDLEWARE with the
+global settings, so this module must NOT star-import them (that would
+duplicate every app). MIDDLEWARE is therefore given in full.
 """
 import os
 
-from core.janeway_global_settings import *  # noqa: F401,F403
-
-SECRET_KEY = os.environ.get("JANEWAY_SECRET_KEY", SECRET_KEY)
+SECRET_KEY = os.environ.get("JANEWAY_SECRET_KEY", "change-me-in-railway-vars")
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
-# Serve static files directly from gunicorn (no separate web server).
-_mw = list(MIDDLEWARE)
-_WHITE_NOISE = "whitenoise.middleware.WhiteNoiseMiddleware"
-if _WHITE_NOISE not in _mw:
-    if _mw and _mw[0].endswith("SecurityMiddleware"):
-        _mw.insert(1, _WHITE_NOISE)
-    else:
-        _mw.insert(0, _WHITE_NOISE)
-MIDDLEWARE = tuple(_mw)
+# Full stock middleware (from core.janeway_global_settings) with
+# WhiteNoise inserted right after SecurityMiddleware so gunicorn can
+# serve static files with no separate web server.
+MIDDLEWARE = (
+    "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.common.CommonMiddleware",
+    "django.middleware.csrf.CsrfViewMiddleware",
+    "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "django.contrib.messages.middleware.MessageMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "django.middleware.security.SecurityMiddleware",
+    "whitenoise.middleware.WhiteNoiseMiddleware",
+    "core.middleware.TimezoneMiddleware",
+    "core.middleware.SiteSettingsMiddleware",
+    "core.middleware.MaintenanceModeMiddleware",
+    "cron.middleware.CronMiddleware",
+    "core.middleware.CounterCookieMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
+    "core.middleware.PressMiddleware",
+    "core.middleware.GlobalRequestMiddleware",
+    "django.middleware.gzip.GZipMiddleware",
+    "journal.middleware.LanguageMiddleware",
+    "hijack.middleware.HijackUserMiddleware",
+    "simple_history.middleware.HistoryRequestMiddleware",
+)
+MERGEABLE_SETTINGS = set()
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 
 # Console email unless SMTP is configured.
 if not os.environ.get("JANEWAY_EMAIL_HOST"):
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-
-# Media location (Railway volume mount point).
-MEDIA_ROOT = os.environ.get("JANEWAY_MEDIA_ROOT", MEDIA_ROOT)
