@@ -39,8 +39,8 @@ if [ -n "$JANEWAY_ADMIN_USER" ] && [ -n "$JANEWAY_ADMIN_EMAIL" ] && [ -n "$JANEW
   JANEWAY_ADMIN_USER="$JANEWAY_ADMIN_USER" JANEWAY_ADMIN_EMAIL="$JANEWAY_ADMIN_EMAIL" JANEWAY_ADMIN_PASSWORD="$JANEWAY_ADMIN_PASSWORD" python src/manage.py shell -c "
 from django.contrib.auth import get_user_model
 User = get_user_model()
-u, created = User.objects.get_or_create(username='$JANEWAY_ADMIN_USER', defaults={'email': '$JANEWAY_ADMIN_EMAIL'})
-u.email = '$JANEWAY_ADMIN_EMAIL'
+u, created = User.objects.get_or_create(email='$JANEWAY_ADMIN_EMAIL', defaults={'username': '$JANEWAY_ADMIN_USER'})
+u.username = '$JANEWAY_ADMIN_USER'
 u.set_password('$JANEWAY_ADMIN_PASSWORD')
 u.is_staff = True
 u.is_superuser = True
@@ -61,12 +61,8 @@ from press import models as press_models
 from journal import models as journal_models
 from utils import install
 domain = '$SITE_DOMAIN'
-press = press_models.Press.objects.filter(domain=domain).first()
-if press is None:
-    install.press(name='EPC Press', code='epc', domain=domain)
-    print('press created:', domain)
-else:
-    print('press exists:', press.name)
+press, created = press_models.Press.objects.get_or_create(domain=domain, defaults={'name': 'EPC Press', 'main_contact': 'editors@epc-journal.org'})
+print('press created:', domain) if created else print('press exists:', press.name)
 journal = journal_models.Journal.objects.filter(code='epc').first()
 if journal is None:
     install.journal(name='Environmental Processes and Chemistry', code='epc', base_url=domain, delete=False)
