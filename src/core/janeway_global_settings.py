@@ -146,8 +146,14 @@ TEMPLATES = [
                 os.path.join(BASE_DIR, "templates", "common"),
                 os.path.join(BASE_DIR, "templates", "admin"),
             ]
-            + plugin_installed_apps.load_plugin_templates(BASE_DIR)
-            + plugin_installed_apps.load_homepage_element_templates(BASE_DIR)
+           try:
+    + plugin_installed_apps.load_plugin_templates(BASE_DIR)
+except (StopIteration, Exception):
+    + []
+           try:
+    + plugin_installed_apps.load_homepage_element_templates(BASE_DIR)
+except (StopIteration, Exception):
+    + []
         ),
         "OPTIONS": {
             "context_processors": [
