@@ -33,6 +33,13 @@ python src/manage.py migrate --noinput
 echo "Building theme assets (OLH/material/clean SCSS+JS)..."
 python src/manage.py build_assets || echo "WARNING: build_assets failed (continuing)"
 
+# Default press override stylesheet (referenced unconditionally by the OLH
+# theme; src/static is gitignored upstream so it is generated here).
+mkdir -p src/static/OLH/css
+if [ ! -f src/static/OLH/css/press_override.css ]; then
+  printf '/* EPC press stylesheet overrides. */\n' > src/static/OLH/css/press_override.css
+fi
+
 echo "Collecting static files..."
 python src/manage.py collectstatic --noinput
 
