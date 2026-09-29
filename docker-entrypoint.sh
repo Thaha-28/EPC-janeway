@@ -50,5 +50,31 @@ print('admin ready:', u.username)
 " || echo "WARNING: admin setup failed (continuing)"
 fi
 
+# Bootstrap press + journal with stock Janeway install helpers (idempotent).
+# Without a press matching this host, Janeway redirects / to DEFAULT_HOST.
+SITE_DOMAIN="${JANEWAY_SITE_DOMAIN:-${RAILWAY_PUBLIC_DOMAIN:-epc-janeway-production.up.railway.app}}"
+SITE_DOMAIN="${SITE_DOMAIN#https://}"
+SITE_DOMAIN="${SITE_DOMAIN#http://}"
+echo "Ensuring press/journal for ${SITE_DOMAIN}..."
+SITE_DOMAIN="$SITE_DOMAIN" python src/manage.py shell -c "
+from press import models as press_models
+from journal import models as journal_models
+from utils import install
+domain = '$SITE_DOMAIN'
+press = press_models.Press.objects.filter(domain=domain).first()
+if press is None:
+    install.press(name='EPC Press', code='epc', domain=domain)
+    print('press created:', domain)
+else:
+    print('press exists:', press.name)
+journal = journal_models.Journal.objects.filter(code='epc').first()
+if journal is None:
+    install.journal(name='Environmental Processes and Chemistry', code='epc', base_url=domain, delete=False)
+    install.update_issue_types(journal_models.Journal.objects.get(code='epc'), management_command=False)
+    print('journal created: epc')
+else:
+    print('journal exists:', journal.code)
+" || echo "WARNING: site bootstrap failed (continuing)"
+
 echo "Starting gunicorn on 0.0.0.0:${PORT}..."
 exec gunicorn core.wsgi:application --chdir src --bind "0.0.0.0:${PORT}" --workers 2 --timeout 120 --access-logfile - --error-logfile -
