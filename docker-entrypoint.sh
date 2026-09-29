@@ -66,11 +66,19 @@ press, created = press_models.Press.objects.get_or_create(domain=domain, default
 print('press created:', domain) if created else print('press exists:', press.name)
 journal = journal_models.Journal.objects.filter(code='epc').first()
 if journal is None:
-    install.journal(name='Environmental Processes and Chemistry', code='epc', base_url=domain, delete=False)
-    install.update_issue_types(journal_models.Journal.objects.get(code='epc'), management_command=False)
+    install.journal(name='Environmental Processes and Chemistry', code='epc', base_url='', delete=False)
+    journal = journal_models.Journal.objects.get(code='epc')
+    install.update_issue_types(journal, management_command=False)
     print('journal created: epc')
 else:
     print('journal exists:', journal.code)
+# Path-mode serving: the press owns the domain, journals live under /<code>/,
+# so the journal itself must have a blank domain (else it matches by domain
+# and /epc/ is not a valid in-journal path).
+if journal.domain:
+    journal.domain = None
+    journal.save()
+    print('journal domain cleared for path mode')
 " || echo "WARNING: site bootstrap failed (continuing)"
 
 echo "Starting gunicorn on 0.0.0.0:${PORT}..."
