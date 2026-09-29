@@ -20,7 +20,7 @@ WORKDIR /vol/janeway
 COPY requirements.txt ./
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt && \
-    pip install gunicorn whitenoise django-anymail
+    pip install "Django==4.2.30" gunicorn whitenoise django-anymail
 
 COPY . .
 
