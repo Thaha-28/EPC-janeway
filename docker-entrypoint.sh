@@ -50,11 +50,5 @@ print('admin ready:', u.username)
 " || echo "WARNING: admin setup failed (continuing)"
 fi
 
-# Seed EPC journal content (idempotent).
-if [ -f /vol/janeway/seed_epc.py ]; then
-  echo "Seeding EPC content..."
-  python src/manage.py shell < /vol/janeway/seed_epc.py || echo "WARNING: seed failed (continuing)"
-fi
-
 echo "Starting gunicorn on 0.0.0.0:${PORT}..."
 exec gunicorn core.wsgi:application --chdir src --bind "0.0.0.0:${PORT}" --workers 2 --timeout 120 --access-logfile - --error-logfile -

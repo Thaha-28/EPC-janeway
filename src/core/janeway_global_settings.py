@@ -104,14 +104,8 @@ INSTALLED_APPS = [
     "django.forms",
 ]
 
-try:
-    INSTALLED_APPS += plugin_installed_apps.load_plugin_apps(BASE_DIR)
-except (StopIteration, Exception):
-    pass
-try:
-    INSTALLED_APPS += plugin_installed_apps.load_homepage_element_apps(BASE_DIR)
-except (StopIteration, Exception):
-    pass
+INSTALLED_APPS += plugin_installed_apps.load_plugin_apps(BASE_DIR)
+INSTALLED_APPS += plugin_installed_apps.load_homepage_element_apps(BASE_DIR)
 
 MIDDLEWARE = (
     "django.contrib.sessions.middleware.SessionMiddleware",
@@ -146,14 +140,8 @@ TEMPLATES = [
                 os.path.join(BASE_DIR, "templates", "common"),
                 os.path.join(BASE_DIR, "templates", "admin"),
             ]
-           try:
-    + plugin_installed_apps.load_plugin_templates(BASE_DIR)
-except (StopIteration, Exception):
-    + []
-           try:
-    + plugin_installed_apps.load_homepage_element_templates(BASE_DIR)
-except (StopIteration, Exception):
-    + []
+            + plugin_installed_apps.load_plugin_templates(BASE_DIR)
+            + plugin_installed_apps.load_homepage_element_templates(BASE_DIR)
         ),
         "OPTIONS": {
             "context_processors": [

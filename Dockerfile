@@ -24,8 +24,11 @@ RUN pip install --upgrade pip && \
 
 COPY . .
 
-# Static files can be collected without a live database.
-RUN python src/manage.py collectstatic --noinput
+# Guarantee directories that Django walks at startup exist even if the
+# build context drops empty dirs (e.g. src/plugins ships only .gitkeep).
+# migrate/collectstatic run at container boot against the live database.
+RUN mkdir -p src/plugins src/media src/collected-static files && \
+    python -c "import ast; ast.parse(open('src/core/janeway_global_settings.py').read()); ast.parse(open('src/core/railway_settings.py').read()); print('settings syntax OK')"
 
 COPY docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
