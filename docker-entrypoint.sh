@@ -67,11 +67,20 @@ SITE_DOMAIN="${SITE_DOMAIN#https://}"
 SITE_DOMAIN="${SITE_DOMAIN#http://}"
 echo "Ensuring press/journal for ${SITE_DOMAIN}..."
 SITE_DOMAIN="$SITE_DOMAIN" python src/manage.py shell -c "
+from django.core.management import call_command
 from press import models as press_models
 from journal import models as journal_models
+from core import models as core_models
 from utils import install
 domain = '$SITE_DOMAIN'
 install.update_settings(management_command=False)
+# Role fixtures (utils/install/roles.json) are required for registration
+# (add_account_role) and many staff flows. Same source as install_janeway.
+if not core_models.Role.objects.exists():
+    call_command('loaddata', 'src/utils/install/roles.json', verbosity=0)
+    print('roles loaded:', core_models.Role.objects.count())
+else:
+    print('roles exist:', core_models.Role.objects.count())
 press, created = press_models.Press.objects.get_or_create(domain=domain, defaults={'name': 'EPC Press', 'main_contact': 'editors@epc-journal.org'})
 print('press created:', domain) if created else print('press exists:', press.name)
 journal = journal_models.Journal.objects.filter(code='epc').first()
