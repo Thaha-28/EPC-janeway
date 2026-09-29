@@ -79,7 +79,16 @@ if journal.domain:
     journal.domain = None
     journal.save()
     print('journal domain cleared for path mode')
+if journal.name != 'Environmental Processes and Chemistry':
+    journal.name = 'Environmental Processes and Chemistry'
+    print('journal name set')
 " || echo "WARNING: site bootstrap failed (continuing)"
+
+# Seed EPC demo content (idempotent, no-op if journal missing).
+if [ -f seed_epc.py ]; then
+  echo "Seeding EPC content..."
+  python src/manage.py shell < seed_epc.py || echo "WARNING: seed failed (continuing)"
+fi
 
 echo "Starting gunicorn on 0.0.0.0:${PORT}..."
 exec gunicorn core.wsgi:application --chdir src --bind "0.0.0.0:${PORT}" --workers 2 --timeout 120 --access-logfile - --error-logfile -
