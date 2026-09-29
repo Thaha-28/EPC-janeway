@@ -104,8 +104,14 @@ INSTALLED_APPS = [
     "django.forms",
 ]
 
-INSTALLED_APPS += plugin_installed_apps.load_plugin_apps(BASE_DIR)
-INSTALLED_APPS += plugin_installed_apps.load_homepage_element_apps(BASE_DIR)
+try:
+    INSTALLED_APPS += plugin_installed_apps.load_plugin_apps(BASE_DIR)
+except (StopIteration, Exception):
+    pass
+try:
+    INSTALLED_APPS += plugin_installed_apps.load_homepage_element_apps(BASE_DIR)
+except (StopIteration, Exception):
+    pass
 
 MIDDLEWARE = (
     "django.contrib.sessions.middleware.SessionMiddleware",
