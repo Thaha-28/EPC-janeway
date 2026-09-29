@@ -61,6 +61,7 @@ from press import models as press_models
 from journal import models as journal_models
 from utils import install
 domain = '$SITE_DOMAIN'
+install.update_settings(management_command=False)
 press, created = press_models.Press.objects.get_or_create(domain=domain, defaults={'name': 'EPC Press', 'main_contact': 'editors@epc-journal.org'})
 print('press created:', domain) if created else print('press exists:', press.name)
 journal = journal_models.Journal.objects.filter(code='epc').first()
