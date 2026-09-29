@@ -104,6 +104,21 @@ TEMPLATES = [
     },
 ]
 
-# Console email unless SMTP is configured.
-if not os.environ.get("JANEWAY_EMAIL_HOST"):
+# Email: SMTP when JANEWAY_EMAIL_HOST is set (required for registration
+# activation links and password resets), console backend otherwise.
+# For Gmail: host smtp.gmail.com, port 587, user = address, password = app
+# password, TLS on. For Resend/SMTP: host smtp.resend.com, port 587.
+if os.environ.get("JANEWAY_EMAIL_HOST"):
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_HOST = os.environ["JANEWAY_EMAIL_HOST"]
+    EMAIL_PORT = int(os.environ.get("JANEWAY_EMAIL_PORT", "587"))
+    EMAIL_HOST_USER = os.environ.get("JANEWAY_EMAIL_USER", "")
+    EMAIL_HOST_PASSWORD = os.environ.get("JANEWAY_EMAIL_PASSWORD", "")
+    EMAIL_USE_TLS = os.environ.get("JANEWAY_EMAIL_USE_TLS", "true").lower() in {"1", "true", "yes"}
+    EMAIL_USE_SSL = os.environ.get("JANEWAY_EMAIL_USE_SSL", "false").lower() in {"1", "true", "yes"}
+    EMAIL_TIMEOUT = int(os.environ.get("JANEWAY_EMAIL_TIMEOUT", "15"))
+    DEFAULT_FROM_EMAIL = os.environ.get(
+        "JANEWAY_FROM_EMAIL", EMAIL_HOST_USER or "noreply@epc-journal.org"
+    )
+else:
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
