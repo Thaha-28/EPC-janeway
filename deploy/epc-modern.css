@@ -1,0 +1,264 @@
+/* ==========================================================================
+   EPC modern theme layer for Janeway (OLH theme overrides).
+   Loaded as press_override.css on press pages and default_override.css
+   on journal pages. Targets stock OLH/Foundation markup only.
+   Brand: ink #1C1D1E, paper #F8F9FA, hairlines, serif display headings.
+   ========================================================================== */
+
+:root {
+  --epc-ink: #1c1d1e;
+  --epc-body: #414246;
+  --epc-muted: #767676;
+  --epc-paper: #f8f9fa;
+  --epc-card: #ffffff;
+  --epc-line: #efeff0;
+  --epc-line-strong: #d8d9da;
+  --epc-accent: #0f766e;
+  --epc-serif: Georgia, "Times New Roman", "Nimbus Roman", serif;
+  --epc-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --epc-radius: 10px;
+  --epc-shadow: 0 1px 2px rgba(28, 29, 30, 0.05), 0 4px 14px rgba(28, 29, 30, 0.06);
+}
+
+/* Base */
+body {
+  font-family: var(--epc-sans);
+  background: var(--epc-paper);
+  color: var(--epc-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, .card-divider h1, .card-divider h2, .card-divider h3 {
+  font-family: var(--epc-serif);
+  color: var(--epc-ink);
+  letter-spacing: -0.01em;
+}
+
+a { color: var(--epc-ink); }
+a:hover { color: #000; }
+
+::selection { background: var(--epc-ink); color: #fff; }
+
+.wrapper { background: var(--epc-paper); }
+
+/* Header */
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--epc-line);
+}
+
+.main-header .top-bar,
+.main-header .main.top-bar {
+  background: transparent;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0.55rem 1rem;
+}
+
+.top-bar-left.header-image-bar img,
+.header-image.top-bar-image {
+  max-height: 44px;
+  width: auto;
+}
+
+.border-right { border-right: none !important; }
+.border-left { border-left: none !important; }
+
+#main-menu .menu a {
+  font-size: 0.83rem;
+  font-weight: 600;
+  color: var(--epc-body);
+  padding: 0.6rem 0.8rem;
+  border-radius: 7px;
+}
+
+#main-menu .menu a:hover,
+#main-menu .menu .active > a {
+  background: var(--epc-paper);
+  color: var(--epc-ink);
+}
+
+.is-dropdown-submenu {
+  background: #fff;
+  border: 1px solid var(--epc-line);
+  border-radius: var(--epc-radius);
+  box-shadow: var(--epc-shadow);
+  padding: 0.35rem;
+  min-width: 220px;
+}
+
+.title-bar.toggle { background: #fff; color: var(--epc-ink); }
+.title-bar.toggle .menu-icon::after { background: var(--epc-ink); box-shadow: 0 7px 0 var(--epc-ink), 0 14px 0 var(--epc-ink); }
+
+/* Search */
+.input-group { border: none; }
+input[type="search"], .input-group-field {
+  border: 1px solid var(--epc-line-strong);
+  border-radius: 8px 0 0 8px;
+}
+.input-group-button .button { border-radius: 0 8px 8px 0; }
+
+/* Buttons */
+.button {
+  background: var(--epc-ink);
+  border: 1px solid var(--epc-ink);
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  padding: 0.65em 1.2em;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.button:hover, .button:focus { background: #000; border-color: #000; color: #fff; }
+.button:active { transform: translateY(1px); }
+
+.button.secondary, .button.hollow {
+  background: #fff;
+  border: 1px solid var(--epc-line-strong);
+  color: var(--epc-ink);
+}
+
+.button.secondary:hover, .button.hollow:hover {
+  background: var(--epc-paper);
+  border-color: #c2c3c6;
+  color: var(--epc-ink);
+}
+
+.button.success { background: var(--epc-accent); border-color: var(--epc-accent); }
+.button.success:hover { background: #0b5e58; border-color: #0b5e58; }
+.button.alert { border-radius: 8px; }
+
+/* Cards, callouts, boxes */
+.card, .callout, .box_article, .issue-block, .news-item {
+  background: var(--epc-card);
+  border: 1px solid var(--epc-line);
+  border-radius: var(--epc-radius);
+  box-shadow: var(--epc-shadow);
+}
+
+.card-divider {
+  background: var(--epc-paper);
+  border-bottom: 1px solid var(--epc-line);
+  font-weight: 700;
+  color: var(--epc-ink);
+  padding: 0.7rem 1rem;
+}
+
+.card-section { padding: 1rem 1.1rem; }
+
+/* Article & journal pages */
+.article-title, h1.article-title {
+  font-size: 1.7rem;
+  line-height: 1.25;
+  margin-bottom: 0.4rem;
+}
+
+.article-abstract, .abstract {
+  background: var(--epc-paper);
+  border: 1px solid var(--epc-line-strong);
+  border-radius: var(--epc-radius);
+  padding: 1rem 1.2rem;
+}
+
+.label, .badge {
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.breadcrumbs { font-size: 0.78rem; }
+.breadcrumbs a { color: var(--epc-muted); }
+.breadcrumbs a:hover { color: var(--epc-ink); }
+
+/* Tables */
+table { border: 1px solid var(--epc-line-strong); border-radius: var(--epc-radius); overflow: hidden; }
+thead { background: var(--epc-paper); }
+thead th {
+  color: var(--epc-ink);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+tbody td { font-size: 0.86rem; }
+
+/* Forms */
+label { font-size: 0.82rem; font-weight: 600; color: var(--epc-ink); }
+
+input[type="text"], input[type="password"], input[type="email"],
+input[type="number"], input[type="search"], textarea, select {
+  border: 1px solid var(--epc-line-strong);
+  border-radius: 8px;
+  box-shadow: none;
+  font-size: 0.88rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--epc-ink);
+  box-shadow: 0 0 0 3px rgba(28, 29, 30, 0.08);
+}
+
+.help-text, .form-error { font-size: 0.78rem; }
+.is-invalid-input { border-color: #cc4b37; }
+
+/* Reveal modals */
+.reveal {
+  border: none;
+  border-radius: 14px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.18);
+}
+
+/* Footer */
+.main-footer {
+  background: var(--epc-ink);
+  color: rgba(255, 255, 255, 0.75);
+  border-top: none;
+  margin-top: 3rem;
+  padding-top: 2.2rem;
+  padding-bottom: 2.2rem;
+}
+
+.main-footer a { color: #fff; }
+.main-footer a:hover { color: rgba(255, 255, 255, 0.7); }
+.main-footer h1, .main-footer h2, .main-footer h3, .main-footer h4 {
+  color: #fff;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-family: var(--epc-sans);
+}
+
+.main-footer .logo-wrapper { background: transparent !important; }
+
+/* Content measure */
+.row .columns .page-content, .cms-page {
+  max-width: 72ch;
+}
+
+/* Pagination */
+.pagination .current {
+  background: var(--epc-ink);
+  border-radius: 7px;
+}
+.pagination a { border-radius: 7px; color: var(--epc-body); }
+.pagination a:hover { background: var(--epc-line); }
+
+/* Right-hand menus */
+.right-hand-menu .menu a, .side-nav a {
+  border-radius: 7px;
+  font-size: 0.85rem;
+}
+.right-hand-menu .menu a:hover, .right-hand-menu .menu .active > a {
+  background: var(--epc-paper);
+  color: var(--epc-ink);
+}
+
+@media (max-width: 639px) {
+  .article-title, h1.article-title { font-size: 1.35rem; }
+  .main-header .main.top-bar { padding: 0.4rem 0.75rem; }
+}
