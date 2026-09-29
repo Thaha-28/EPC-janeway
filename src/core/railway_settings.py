@@ -17,6 +17,9 @@ SECRET_KEY = os.environ.get("JANEWAY_SECRET_KEY", "change-me-in-railway-vars")
 DEBUG = False
 ALLOWED_HOSTS = ["*"]
 
+# Serve /media/ from Django (no nginx on Railway).
+ROOT_URLCONF = "core.railway_urls"
+
 # Railway terminates TLS at its edge proxy and forwards plain HTTP with
 # X-Forwarded-Proto. Without these, Django sees insecure requests from a
 # secure origin and rejects every POST with "CSRF verification failed".

@@ -114,6 +114,7 @@ if journal.print_issn:
     print('print issn cleared')
 from utils import setting_handler
 setting_handler.save_setting('general', 'publisher_name', journal, 'Environmental Processes and Chemistry')
+setting_handler.save_setting('general', 'publisher_url', journal, 'https://epc-journal.org')
 # Press footer middle column content.
 if not press.footer_description:
     press.footer_description = 'Diamond open access publishing in environmental chemistry and process science. All content is published under a Creative Commons Attribution (CC BY) licence.'
