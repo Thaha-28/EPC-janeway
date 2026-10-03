@@ -21,21 +21,29 @@ if journal is None:
     print("No epc journal yet, skipping theme seed.")
     raise SystemExit(0)
 
+
+def safe_save_setting(group, name, value):
+    """Save a setting; warn (don't abort) if the Setting row is missing."""
+    try:
+        setting_handler.save_setting(group, name, journal, value)
+    except core_models.Setting.DoesNotExist:
+        print(f"WARNING: setting {group}.{name} missing in DB, skipped")
+
+
 # --- Theme + journal settings -------------------------------------------
-setting_handler.save_setting("general", "journal_theme", journal, "epc")
-setting_handler.save_setting("general", "journal_base_theme", journal, "OLH")
-setting_handler.save_setting("general", "main_contact", journal, CONTACT_EMAIL)
-setting_handler.save_setting("general", "custom_cms_templates", journal, "custom")
-setting_handler.save_setting(
+safe_save_setting("general", "journal_theme", "epc")
+safe_save_setting("general", "journal_base_theme", "OLH")
+safe_save_setting("general", "main_contact", CONTACT_EMAIL)
+safe_save_setting("general", "custom_cms_templates", "custom")
+safe_save_setting(
     "general",
     "journal_description",
-    journal,
     "Environmental Processes and Chemistry is a diamond open access, peer "
     "reviewed journal publishing rigorous research on chemical processes in "
     "natural and engineered environments.",
 )
-setting_handler.save_setting(
-    "styling", "editorial_group_page_name", journal, "Editorial Board"
+safe_save_setting(
+    "styling", "editorial_group_page_name", "Editorial Board"
 )
 
 # Online ISSN: pending assignment (shown as such, per reviewer).
@@ -64,7 +72,7 @@ for flag, value in [
     ("enable_editorial_display", True),
     ("multi_page_editorial", False),
 ]:
-    setting_handler.save_setting("general", flag, journal, value)
+    safe_save_setting("general", flag, value)
 
 # --- CMS pages ------------------------------------------------------------
 ct = ContentType.objects.get_for_model(journal)
