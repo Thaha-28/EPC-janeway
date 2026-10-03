@@ -1,0 +1,136 @@
+{% load i18n %}
+{# EPC override: formatted citation + copy + RIS/BibTeX downloads.
+   Data for the JS builders is carried in hidden spans/attributes so no
+   server-side formatting is needed. #}
+{% with article.how_to_cite|safe as cite %}
+<div id="article_how_to_cite" class="epc-cite-box" data-epc-cite
+     data-cite-journal="{{ request.journal.name }}"
+     data-cite-year="{{ article.date_published.year }}"
+     data-cite-pages="{{ article.page_range }}"
+     data-cite-doi="{% if article.identifier.id_type == 'doi' %}{{ article.identifier.identifier }}{% endif %}"
+     data-cite-issn="{{ request.journal.issn }}"
+     data-cite-publisher="{{ journal_settings.general.publisher_name }}"
+     data-cite-url="{{ request.build_absolute_uri }}">
+  <p class="epc-kicker">{% trans "How to cite" %}</p>
+  <p class="epc-cite-text" data-cite-title style="display:none;">{{ article.title|striptags }}</p>
+  <p style="margin-top:8px;font-size:14px;line-height:1.6;color:#1C1D1E;">
+    <span id="cite-content">{{ cite }}</span>
+  </p>
+  <span style="display:none;" aria-hidden="true">
+    {% for author in article.frozen_authors.all %}<span data-cite-author>{{ author.full_name }}</span>{% endfor %}
+  </span>
+  <div class="epc-cite-actions">
+    <button type="button" class="epc-btn epc-btn-light" data-epc-copy-cite>{% trans "Copy citation" %}</button>
+    <button type="button" class="epc-btn epc-btn-light" data-epc-dl-ris>{% trans "Download RIS" %}</button>
+    <button type="button" class="epc-btn epc-btn-light" data-epc-dl-bibtex>{% trans "Download BibTeX" %}</button>
+  </div>
+  <p class="epc-muted" style="margin-top:8px;">{% trans "RIS imports into Zotero and Mendeley; BibTeX is for LaTeX." %}</p>
+</div>
+<script>
+(function () {
+  function root(btn) { return btn.closest("[data-epc-cite]"); }
+  function text(rootEl, sel) {
+    var el = rootEl.querySelector(sel);
+    return el ? (el.textContent || "").trim() : "";
+  }
+  function data(article) {
+    var authors = [];
+    var nodes = article.querySelectorAll("[data-cite-author]");
+    for (var i = 0; i < nodes.length; i++) {
+      var n = (nodes[i].textContent || "").trim();
+      if (n) authors.push(n);
+    }
+    return {
+      title: text(article, "[data-cite-title]"),
+      authors: authors,
+      journal: article.getAttribute("data-cite-journal") || "",
+      year: article.getAttribute("data-cite-year") || "",
+      pages: article.getAttribute("data-cite-pages") || "",
+      doi: article.getAttribute("data-cite-doi") || "",
+      issn: article.getAttribute("data-cite-issn") || "",
+      publisher: article.getAttribute("data-cite-publisher") || "",
+      url: article.getAttribute("data-cite-url") || ""
+    };
+  }
+  function ris(d) {
+    var lines = ["TY  - JOUR", "TI  - " + d.title];
+    for (var i = 0; i < d.authors.length; i++) lines.push("AU  - " + d.authors[i]);
+    lines.push("JO  - " + d.journal);
+    if (d.year) { lines.push("Y1  - " + d.year); lines.push("PY  - " + d.year); }
+    if (d.pages) {
+      var parts = d.pages.split("-");
+      lines.push("SP  - " + parts[0].trim());
+      if (parts[1]) lines.push("EP  - " + parts[1].trim());
+    }
+    if (d.doi) { lines.push("DO  - " + d.doi); lines.push("UR  - https://doi.org/" + d.doi); }
+    else if (d.url) { lines.push("UR  - " + d.url); }
+    if (d.publisher) lines.push("PB  - " + d.publisher);
+    if (d.issn) lines.push("SN  - " + d.issn);
+    lines.push("ER  - ");
+    return lines.join("\n");
+  }
+  function bibtex(d, pk) {
+    var key = "epc" + (d.year || "0000") + pk;
+    return "@article{" + key + ",\n" +
+      "  title = {" + d.title + "},\n" +
+      "  author = {" + d.authors.join(" and ") + "},\n" +
+      "  journal = {" + d.journal + "},\n" +
+      "  year = {" + (d.year || "") + "},\n" +
+      "  pages = {" + (d.pages || "") + "},\n" +
+      "  doi = {" + (d.doi || "") + "},\n" +
+      "  issn = {" + (d.issn || "") + "},\n" +
+      "  publisher = {" + (d.publisher || "") + "},\n" +
+      "  url = {" + (d.doi ? "https://doi.org/" + d.doi : d.url) + "}\n" +
+      "}";
+  }
+  function download(content, filename, mime) {
+    var blob = new Blob([content], { type: mime });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
+  }
+  function copyText(btn, getText) {
+    var done = function (ok) {
+      var label = ok ? "Copied" : "Copy failed";
+      var orig = btn.getAttribute("data-orig") || btn.textContent;
+      if (!btn.getAttribute("data-orig")) btn.setAttribute("data-orig", orig);
+      btn.textContent = label;
+      setTimeout(function () { btn.textContent = btn.getAttribute("data-orig"); }, 2000);
+    };
+    var t = getText();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(function () { done(true); }, function () { done(false); });
+    } else {
+      try {
+        var ta = document.createElement("textarea");
+        ta.value = t; document.body.appendChild(ta); ta.select();
+        document.execCommand("copy"); ta.remove(); done(true);
+      } catch (e) { done(false); }
+    }
+  }
+  function articlePk() {
+    var m = window.location.pathname.match(/(\d+)\/?$/);
+    return m ? m[1] : "article";
+  }
+  document.addEventListener("click", function (ev) {
+    var copyBtn = ev.target.closest("[data-epc-copy-cite]");
+    var risBtn = ev.target.closest("[data-epc-dl-ris]");
+    var bibBtn = ev.target.closest("[data-epc-dl-bibtex]");
+    if (!copyBtn && !risBtn && !bibBtn) return;
+    var box = root(copyBtn || risBtn || bibBtn);
+    if (!box) return;
+    var d = data(box);
+    if (copyBtn) {
+      var citeEl = box.querySelector("#cite-content");
+      copyText(copyBtn, function () { return citeEl ? citeEl.textContent.trim() : ""; });
+    } else if (risBtn) {
+      download(ris(d), "EPC-" + articlePk() + ".ris", "application/x-research-info-systems");
+    } else if (bibBtn) {
+      download(bibtex(d, articlePk()), "EPC-" + articlePk() + ".bib", "application/x-bibtex");
+    }
+  });
+})();
+</script>
+{% endwith %}

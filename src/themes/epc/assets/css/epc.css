@@ -238,6 +238,14 @@ a.epc-brand, a.epc-brand:visited { color: var(--epc-ink); text-decoration: none;
 .epc-cta .epc-btn-dark-cta { background: #fff; color: var(--epc-ink) !important; border-color: #fff; }
 .epc-cta .epc-btn-dark-cta:visited { color: var(--epc-ink) !important; }
 
+/* ---------- citation export box (article page) ---------- */
+.epc-cite-box {
+  border-radius: 4px; border: 1px solid var(--epc-grey-300);
+  background: #fff; padding: 16px; margin: 16px 0;
+}
+.epc-cite-actions { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 8px; }
+.epc-cite-actions .epc-btn { padding: 6px 12px; font-size: 12px; }
+
 /* ---------- misc ---------- */
 .epc-table-wrap { overflow: hidden; border-radius: 4px; border: 1px solid var(--epc-grey-200); }
 .epc-note { border-radius: 4px; border: 1px dashed var(--epc-grey-300); background: var(--epc-grey-100); padding: 12px 16px; font-size: 14px; line-height: 1.6; }
