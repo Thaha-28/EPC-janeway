@@ -33,4 +33,5 @@ def build():
     static_epc = os.path.join(settings.BASE_DIR, "static", "epc")
     copy_tree(os.path.join(theme_assets, "css"), os.path.join(static_epc, "css"))
     copy_tree(os.path.join(theme_assets, "img"), os.path.join(static_epc, "img"))
+    copy_tree(os.path.join(theme_assets, "js"), os.path.join(static_epc, "js"))
     print("EPC theme assets installed.")

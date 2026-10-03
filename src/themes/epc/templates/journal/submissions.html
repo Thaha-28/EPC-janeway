@@ -1,0 +1,62 @@
+{% extends "core/base.html" %}
+{% load i18n static %}
+{% load next_url %}
+
+{% block title %}{% trans 'Submissions' %}{% endblock title %}
+
+{% block body %}
+<div class="epc-crumbs">
+  <a href="{% url 'website_index' %}">{% trans "Home" %}</a>
+  <span> / </span>
+  <span>{% trans "Submit" %}</span>
+</div>
+<div class="epc-wrap">
+  <div class="epc-card">
+    <div class="epc-section">
+      <p class="epc-kicker">{% trans "Author workflow" %}</p>
+      <h1 class="epc-h1">{% trans "Submit a manuscript" %}</h1>
+      <p class="epc-lede" style="margin-top:8px;max-width:70ch;">
+        {% trans "Manuscripts are submitted online through our editorial system. Create an author account, upload your files, and track peer review, revisions, and production from your author dashboard." %}
+      </p>
+      {{ journal_settings.general.submission_intro_text|safe }}
+    </div>
+
+    <div class="epc-section">
+      <div class="epc-cta">
+        <h2>{% trans "Ready to submit?" %}</h2>
+        <p>{% trans "Start a new submission in the editorial system. You will need an author account — registration takes a minute and includes email confirmation." %}</p>
+        <div class="epc-cta-actions">
+          {% if not request.user.is_authenticated %}
+            <a href="{% url_with_return 'core_register' %}" class="epc-btn epc-btn-white">{% trans "Create author account" %}</a>
+            <a href="{% url_with_return 'core_login' %}" class="epc-btn epc-btn-outline-light">{% trans "Log in to submit" %}</a>
+          {% else %}
+            <a href="{% url 'submission_start' %}" class="epc-btn epc-btn-white">{% trans "Start online submission" %}</a>
+          {% endif %}
+          <a href="{% url 'cms_page' "author-guidelines" %}" class="epc-btn epc-btn-outline-light">{% trans "Read author guidelines" %}</a>
+        </div>
+      </div>
+    </div>
+
+    {% if not journal_settings.general.disable_journal_submission %}
+    <div class="epc-section epc-prose">
+      {% for item in submission_items %}
+        {% if item.title == 'licences' %}
+          <h2>{% trans 'Licences' %}</h2>
+          <p>{% trans "The following licences are allowed:" %}</p>
+          {% include "elements/license_block.html" %}
+        {% elif item.title == 'sections' %}
+          {% include "elements/section_block.html" %}
+        {% elif item.get_display_text %}
+          <h2>{{ item.title|capfirst }}</h2>
+          {{ item.get_display_text|safe }}
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="epc-section epc-prose">
+      <p>{{ journal_settings.general.disable_journal_submission_message|safe }}</p>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock body %}

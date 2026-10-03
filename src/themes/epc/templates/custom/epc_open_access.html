@@ -21,7 +21,7 @@
       <div class="epc-prose" style="margin-top:12px;">{{ page.content|safe }}</div>
     </div>
 
-    <div class="epc-section epc-prose" style="border-top:1px solid #EFEFF0;">
+    <div class="epc-section epc-prose" style="border-top:1px solid var(--epc-border);">
       <h2>{% trans "Open access" %}</h2>
       <p>{% trans "All articles are open access and free to read immediately on publication under Creative Commons Attribution 4.0 International (CC BY 4.0). Authors retain copyright." %}</p>
       <h3>{% trans "Licensing" %}</h3>
@@ -35,13 +35,13 @@
             <tr><th>{% trans "Service" %}</th><th>{% trans "Status" %}</th></tr>
           </thead>
           <tbody>
-            <tr><td>Crossref</td><td>{% trans "DOI registration and scholarly metadata" %}</td></tr>
-            <tr><td>OAI-PMH</td><td>{% trans "Enabled for metadata harvesting" %}</td></tr>
-            <tr><td>OpenAIRE</td><td>{% trans "Registration/harvesting planned" %}</td></tr>
-            <tr><td>Google Scholar</td><td>{% trans "Structured metadata and discoverability optimized" %}</td></tr>
-            <tr><td>DOAJ</td><td>{% trans "Application planned after eligibility requirements are met" %}</td></tr>
-            <tr><td>Scopus</td><td>{% trans "Future application subject to evaluation" %}</td></tr>
-            <tr><td>Web of Science</td><td>{% trans "Future application subject to evaluation" %}</td></tr>
+            <tr><td>Crossref</td><td><span class="epc-pill epc-pill-active">{% trans "Active" %}</span> <span class="epc-muted">{% trans "DOI registration and scholarly metadata" %}</span></td></tr>
+            <tr><td>OAI-PMH</td><td><span class="epc-pill epc-pill-active">{% trans "Active" %}</span> <span class="epc-muted">{% trans "Enabled for metadata harvesting" %}</span></td></tr>
+            <tr><td>OpenAIRE</td><td><span class="epc-pill epc-pill-planned">{% trans "Planned" %}</span> <span class="epc-muted">{% trans "Registration/harvesting planned" %}</span></td></tr>
+            <tr><td>Google Scholar</td><td><span class="epc-pill epc-pill-active">{% trans "Active" %}</span> <span class="epc-muted">{% trans "Structured metadata and discoverability optimized" %}</span></td></tr>
+            <tr><td>DOAJ</td><td><span class="epc-pill epc-pill-planned">{% trans "Planned" %}</span> <span class="epc-muted">{% trans "Application planned after eligibility requirements are met" %}</span></td></tr>
+            <tr><td>Scopus</td><td><span class="epc-pill epc-pill-future">{% trans "Future" %}</span> <span class="epc-muted">{% trans "Future application subject to evaluation" %}</span></td></tr>
+            <tr><td>Web of Science</td><td><span class="epc-pill epc-pill-future">{% trans "Future" %}</span> <span class="epc-muted">{% trans "Future application subject to evaluation" %}</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -49,7 +49,11 @@
       <h2>{% trans "Publication Fees" %}</h2>
       <p>{% trans "Environmental Processes and Chemistry currently charges no submission fees, article processing charges (APCs), page charges, colour charges, or other mandatory publication fees." %}</p>
       <p>{% trans "All articles are published open access and are freely available to readers immediately upon publication." %}</p>
-      <p>{% trans "Editorial board details and Publisher details may be found under the ABOUT button." %}</p>
+      <div class="epc-note" style="margin-top:16px;">
+        <strong>{% trans "Copyright:" %}</strong> &copy; 2026 {% if journal_settings.general.publisher_name %}{{ journal_settings.general.publisher_name }}{% else %}EnviNova Scientific Publishing{% endif %}<br>
+        <strong>{% trans "License:" %}</strong> {% trans "All articles are published under the Creative Commons Attribution 4.0 International License" %} (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>).
+      </div>
+      <p style="margin-top:12px;">{% trans "Editorial board details and Publisher details may be found under the ABOUT button." %}</p>
     </div>
   </div>
 </div>

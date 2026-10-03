@@ -4,74 +4,106 @@
 {% block title %}{{ request.journal.name }}{% endblock title %}
 
 {% block body %}
-<h1 class="sr-only">{{ request.journal.name }} {% trans 'Home Page' %}</h1>
+<h1 class="epc-sr-only">{{ request.journal.name }} {% trans 'Home Page' %}</h1>
 
-{# Hero #}
+{# Hero with faint molecular line pattern (inline SVG, decorative) #}
 <div class="epc-hero">
-  <h1>{{ request.journal.name }}</h1>
-  <p class="epc-hero-sub">{% trans "Open research on chemical, biological, and physical processes in natural and engineered environments." %}</p>
-  <div class="epc-hero-cta">
-    <a href="{% url 'current_issue' %}" class="epc-btn epc-btn-dark">{% trans "View current issue" %}</a>
-    <a href="{% url 'journal_submissions' %}" class="epc-btn epc-btn-light">{% trans "Submit an article" %}</a>
+  <svg class="epc-hero-pattern" aria-hidden="true" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 360">
+    <g fill="none" stroke="#0F5C4D" stroke-width="1" opacity="0.14">
+      <circle cx="120" cy="70" r="26"/><circle cx="120" cy="70" r="4" fill="#0F5C4D" stroke="none"/>
+      <circle cx="300" cy="180" r="40"/><circle cx="300" cy="180" r="5" fill="#0F5C4D" stroke="none"/>
+      <circle cx="520" cy="80" r="20"/><circle cx="520" cy="80" r="4" fill="#0F5C4D" stroke="none"/>
+      <circle cx="760" cy="200" r="34"/><circle cx="760" cy="200" r="5" fill="#0F5C4D" stroke="none"/>
+      <circle cx="980" cy="90" r="24"/><circle cx="980" cy="90" r="4" fill="#0F5C4D" stroke="none"/>
+      <circle cx="1100" cy="240" r="30"/><circle cx="1100" cy="240" r="5" fill="#0F5C4D" stroke="none"/>
+      <path d="M120 70 L300 180 L520 80 L760 200 L980 90 L1100 240"/>
+      <path d="M300 180 L760 200 M520 80 L980 90" stroke-dasharray="5 6"/>
+    </g>
+  </svg>
+  <div class="epc-hero-inner">
+    <h1>{{ request.journal.name }}</h1>
+    <p class="epc-hero-sub">{% trans "Open research on chemical, biological, and physical processes in natural and engineered environments." %}</p>
+    <div class="epc-hero-cta">
+      <a href="{% url 'journal_submissions' %}" class="epc-btn epc-btn-dark">{% trans "Submit an article" %}</a>
+      <a href="{% url 'current_issue' %}" class="epc-btn epc-btn-light">{% trans "View current issue" %}</a>
+    </div>
+    <p class="epc-hero-meta">Online ISSN: {% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %} &middot; {% trans "Open Access" %} &middot; {% trans "Continuous publication" %}</p>
   </div>
-  <p class="epc-hero-meta">Online ISSN: {% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %} &middot; {% trans "Continuous publication" %}</p>
+</div>
+
+{# Key facts #}
+<div class="epc-facts" role="list" aria-label="{% trans 'Journal facts' %}">
+  <div class="epc-fact" role="listitem">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+    <div><strong>{% trans "Open access" %}</strong><span>{% trans "Free to read from day one" %}</span></div>
+  </div>
+  <div class="epc-fact" role="listitem">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+    <div><strong>CC BY 4.0</strong><span>{% trans "Authors retain copyright" %}</span></div>
+  </div>
+  <div class="epc-fact" role="listitem">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2M12 11v6M9 14h6"/></svg>
+    <div><strong>{% trans "No publication fees" %}</strong><span>{% trans "No APCs or hidden charges" %}</span></div>
+  </div>
+  <div class="epc-fact" role="listitem">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>
+    <div><strong>{% trans "Peer reviewed" %}</strong><span>{% trans "Independent expert review" %}</span></div>
+  </div>
 </div>
 
 <div class="epc-wrap">
   <div class="epc-card">
-    {# About block #}
+    {# About + side column #}
     <div class="epc-section">
-      <div class="epc-section-head">
-        <h2>{% trans "About this journal" %}</h2>
-        <a href="{% url 'cms_page' "aims-scope" %}">{% trans "Full aims and scope" %}</a>
-      </div>
-      <p class="epc-lede" style="margin-top:16px;">
-        <strong>{{ request.journal.name }} (Online ISSN: {% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %})</strong>
-        {% trans "publishes research across environmental processes, chemistry, remediation and treatment, and integrated environmental chemistry. We welcome experimental, field, and modelling studies that advance process understanding from molecular to landscape scales." %}
-      </p>
-      <div class="epc-grid-4">
-        <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Environmental Processes" %}</h3></div>
-          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Climate change, monitoring, water and soil systems, pollution and remediation, modelling, risk assessment." %}</p>
+      <div class="epc-split">
+        <div>
+          <p class="epc-kicker">{% trans "About this journal" %}</p>
+          <p class="epc-lede" style="margin-top:12px;">
+            <strong>{{ request.journal.name }}</strong>
+            {% trans "publishes research across environmental processes, chemistry, remediation and treatment, and integrated environmental chemistry. We welcome experimental, field, and modelling studies that advance process understanding from molecular to landscape scales." %}
+          </p>
+          <p style="margin-top:12px;">
+            <a class="epc-link-arrow" href="{% url 'cms_page' "aims-scope" %}">{% trans "Full aims and scope" %} &rarr;</a>
+          </p>
         </div>
-        <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Environmental Chemistry" %}</h3></div>
-          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Analytical chemistry, contaminants, biogeochemistry, fate and transport, soil and water chemistry, emerging pollutants." %}</p>
-        </div>
-        <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Environmental Remediation and Treatment" %}</h3></div>
-          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Chemical and physicochemical remediation, advanced oxidation processes, adsorption, photocatalysis, electrochemical processes." %}</p>
-        </div>
-        <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Integrated Environmental Chemistry" %}</h3></div>
-          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Chemistry–climate and ecosystem interactions, microplastics, nanomaterials, circular economy, and resource recovery." %}</p>
+        <div>
+          <p class="epc-kicker">{% trans "Article types" %}</p>
+          <ul class="epc-types" style="margin-top:8px;">
+            <li><span class="epc-type-title">{% trans "Research Articles" %}</span><p>{% trans "Original research and significant advances." %}</p></li>
+            <li><span class="epc-type-title">{% trans "Review Articles" %}</span><p>{% trans "Critical, comprehensive evaluations." %}</p></li>
+            <li><span class="epc-type-title">{% trans "Short Communications" %}</span><p>{% trans "Concise, novel findings, fast." %}</p></li>
+            <li><span class="epc-type-title">{% trans "Perspectives" %}</span><p>{% trans "Forward-looking expert views." %}</p></li>
+          </ul>
+          <p style="margin-top:12px;">
+            <a class="epc-link-arrow" href="{% url 'cms_page' "author-guidelines" %}">{% trans "Author guidelines" %} &rarr;</a>
+          </p>
         </div>
       </div>
     </div>
 
     {# Latest research from the current issue #}
     {% if request.journal.current_issue %}
-    <div class="epc-section" style="border-top:1px solid #EFEFF0;">
+    <div class="epc-section">
       <div class="epc-section-head">
         <h2>{% trans "Latest research" %}</h2>
         <a href="{% url 'current_issue' %}">{% trans "View current issue" %}</a>
       </div>
-      <p class="epc-muted" style="margin-top:8px;">{% trans "Selected articles from the current issue." %}</p>
+      <p class="epc-muted" style="margin-top:0;">{% trans "Selected articles from the current issue." %} {{ request.journal.current_issue.display_title }}</p>
       <div class="epc-grid-2">
         {% for article in request.journal.current_issue.get_sorted_articles|slice:":4" %}
         <article class="epc-article-card">
           <div style="min-width:0;flex:1;">
             <div>
               <span class="epc-tag">{{ article.section.name|default:"Research Article" }}</span>
-              {% if article.date_published %}<span class="epc-muted" style="margin-left:8px;">{{ article.date_published|date:"M d, Y" }}</span>{% endif %}
+              {% if article.date_published %}<span class="epc-muted" style="margin-left:8px;font-size:12px;">{{ article.date_published|date:"M d, Y" }}</span>{% endif %}
             </div>
-            <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
+            <h3><a href="{{ article.url }}">{{ article.title|safe }}</a></h3>
             <p class="epc-authors">{% for author in article.frozen_authors.all %}{{ author.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
             {% if article.abstract %}<p class="epc-abstract">{{ article.abstract|striptags|truncatewords:40 }}</p>{% endif %}
-            <p style="margin-top:12px;font-size:12px;">
-              <a href="{{ article.url }}" style="font-weight:500;color:#1C1D1E;">{% trans "Read article" %}</a>
+            <p style="margin-top:12px;font-size:13px;">
+              <a href="{{ article.url }}" style="font-weight:600;color:var(--epc-primary);">{% trans "Read article" %}</a>
               {% if article.get_doi_url %}
-              <a href="{{ article.get_doi_url }}" target="_blank" rel="noopener" class="epc-muted" style="margin-left:12px;">{{ article.get_doi }}</a>
+              <a href="{{ article.get_doi_url }}" target="_blank" rel="noopener noreferrer" class="epc-muted" style="margin-left:12px;">{{ article.get_doi }}</a>
               {% endif %}
             </p>
           </div>
@@ -81,18 +113,26 @@
     </div>
     {% endif %}
 
-    {# Info block #}
-    <div class="epc-section" style="border-top:1px solid #EFEFF0;background:#F8F9FA;">
-      <div class="epc-grid-2" style="margin-top:0;">
-        <div>
-          <h3 style="font-size:14px;font-weight:600;color:#1C1D1E;">{% trans "A venue for impactful environmental research" %}</h3>
-          <p class="epc-lede" style="margin-top:8px;">{% trans "Our editorial process follows COPE and WAME guidance to ensure transparency and integrity." %}</p>
+    {# Sidebar-style info cards #}
+    <div class="epc-section">
+      <div class="epc-grid-2" style="margin-top:0;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
+        <div class="epc-scope-card" style="padding:20px;">
+          <p class="epc-kicker">{% trans "Journal information" %}</p>
+          <dl style="margin:12px 0 0;">
+            <div class="epc-kv"><dt>{% trans "ISSN" %}</dt><dd>{% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %}</dd></div>
+            <div class="epc-kv"><dt>{% trans "Frequency" %}</dt><dd>{% trans "Continuous" %}</dd></div>
+            <div class="epc-kv"><dt>{% trans "Licence" %}</dt><dd>CC BY 4.0</dd></div>
+          </dl>
         </div>
         <div class="epc-scope-card" style="padding:20px;">
-          <p style="font-size:14px;font-weight:600;color:#1C1D1E;margin:0;">{% trans "Ready to submit" %}</p>
-          <p class="epc-lede" style="margin-top:8px;">{% trans "Manuscripts are handled through our online submission system for secure peer review and editorial tracking." %}</p>
-          <a href="{% url 'journal_submissions' %}" class="epc-btn epc-btn-dark" style="margin-top:16px;width:100%;box-sizing:border-box;">{% trans "Start submission" %}</a>
-          <a href="{% url 'cms_page' "author-guidelines" %}" class="epc-btn epc-btn-light" style="margin-top:8px;width:100%;box-sizing:border-box;">{% trans "Read author guidelines" %}</a>
+          <p class="epc-kicker">{% trans "For reviewers" %}</p>
+          <p class="epc-lede" style="margin-top:8px;font-size:15px;">{% trans "Reviewers are central to EPC. At least two reviewers per manuscript; constructive and timely feedback expected." %}</p>
+          <p style="margin-top:8px;"><a class="epc-link-arrow" href="{% url 'cms_page' "editorial-policies" %}">{% trans "Reviewer guidelines" %} &rarr;</a></p>
+        </div>
+        <div class="epc-scope-card" style="padding:20px;">
+          <p class="epc-kicker">{% trans "For authors" %}</p>
+          <p class="epc-lede" style="margin-top:8px;font-size:15px;">{% trans "Manuscripts are handled through our online submission system for secure peer review and editorial tracking." %}</p>
+          <p style="margin-top:8px;"><a class="epc-link-arrow" href="{% url 'journal_submissions' %}">{% trans "Start submission" %} &rarr;</a></p>
         </div>
       </div>
     </div>

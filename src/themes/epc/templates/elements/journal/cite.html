@@ -13,7 +13,7 @@
      data-cite-url="{{ request.build_absolute_uri }}">
   <p class="epc-kicker">{% trans "How to cite" %}</p>
   <p class="epc-cite-text" data-cite-title style="display:none;">{{ article.title|striptags }}</p>
-  <p style="margin-top:8px;font-size:14px;line-height:1.6;color:#1C1D1E;">
+  <p class="epc-cite-text">
     <span id="cite-content">{{ cite }}</span>
   </p>
   <span style="display:none;" aria-hidden="true">

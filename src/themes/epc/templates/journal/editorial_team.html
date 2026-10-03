@@ -18,35 +18,32 @@
       <h1 class="epc-h1">{% trans "Editorial Board" %}</h1>
       <p class="epc-lede" style="margin-top:8px;">{% trans "Leading researchers in environmental processes, chemistry, remediation and treatment, and integrated environmental chemistry." %}</p>
     </div>
-    <div class="epc-section" style="border-top:1px solid #EFEFF0;">
+    <div class="epc-section" style="border-top:1px solid var(--epc-border);">
       {% for group in editorial_groups %}
       <div style="margin-bottom:32px;">
         {% if not journal_settings.styling.hide_editorial_group_names and not group_id %}
-        <h2 style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#1C1D1E;border-bottom:1px solid #EFEFF0;padding-bottom:8px;">{{ group.name }}</h2>
+        <h2 class="epc-group-title">{{ group.name }}</h2>
         {% endif %}
         {% if group.description %}<div class="epc-prose" style="margin-top:8px;">{{ group.description|safe }}</div>{% endif %}
         <div class="epc-grid-2" style="margin-top:16px;">
           {% for member in group.members %}
           <div class="epc-team-card">
-            <div class="epc-team-photo">
+            <div class="epc-team-photo" role="img" aria-label="{{ member.user.full_name }}">
               {% if member.user.profile_image %}
                 <img src="{{ member.user.profile_image.url }}" alt="{{ member.user.full_name }}" loading="lazy">
               {% elif request.journal.default_profile_image %}
                 <img src="{{ request.journal.default_profile_image.url }}" alt="{{ member.user.full_name }}" loading="lazy">
               {% else %}
-                <svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#767676" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                  <circle cx="12" cy="8" r="4" />
-                  <path d="M4 21c0-4 3.6-6.5 8-6.5s8 2.5 8 6.5" />
-                </svg>
+                <span aria-hidden="true">{{ member.user.first_name|slice:":1" }}{{ member.user.last_name|slice:":1" }}</span>
               {% endif %}
             </div>
             <div style="min-width:0;">
               <h3>{{ member.user.full_name }}</h3>
-              {% if member.statement %}<p class="epc-team-role">{{ member.statement }}</p>{% endif %}
+              {% if member.statement %}<p style="margin:6px 0 0;"><span class="epc-team-role">{{ member.statement }}</span></p>{% endif %}
               {% if member.user.affiliation %}<p class="epc-team-affil">{{ member.user.affiliation }}</p>{% endif %}
               {% if member.user.enable_public_profile %}
-              <p style="margin-top:8px;font-size:12px;">
-                <a href="{% url 'core_public_profile' member.user.uuid %}" style="color:#1C1D1E;">{% trans "View Profile" %}</a>
+              <p style="margin-top:8px;font-size:13px;">
+                <a href="{% url 'core_public_profile' member.user.uuid %}">{% trans "View Profile" %}</a>
               </p>
               {% endif %}
             </div>
@@ -56,7 +53,7 @@
       </div>
       {% endfor %}
       <div class="epc-note">
-        <strong style="color:#1C1D1E;">{% trans "Advisory Board" %}</strong>
+        <strong>{% trans "Advisory Board" %}</strong>
         {% trans "International advisory board under formation. If you are interested in serving, please contact the editorial office via the contact page." %}
       </div>
     </div>

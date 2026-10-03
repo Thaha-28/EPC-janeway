@@ -33,12 +33,11 @@ python src/manage.py migrate --noinput
 echo "Building theme assets (OLH/material/clean SCSS+JS)..."
 python src/manage.py build_assets || echo "WARNING: build_assets failed (continuing)"
 
-# EPC modern theme layer. The OLH theme loads press_override.css on press
-# pages and default_override.css on journal pages; src/static is gitignored
-# upstream so both are generated here from the committed deploy source.
+# EPC theme layer. Journal pages are styled by the epc sub-theme
+# (src/themes/epc, design system in assets/css/epc.css, installed by
+# build_assets). Only the press site still uses the legacy override file.
 mkdir -p src/static/OLH/css
 cp deploy/epc-modern.css src/static/OLH/css/press_override.css
-cp deploy/epc-modern.css src/static/OLH/css/default_override.css
 echo "Theme overrides installed."
 
 echo "Collecting static files..."

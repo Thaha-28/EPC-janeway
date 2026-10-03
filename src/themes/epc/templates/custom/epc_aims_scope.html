@@ -21,12 +21,12 @@
       <div class="epc-prose" style="margin-top:12px;">{{ page.content|safe }}</div>
     </div>
 
-    <div class="epc-section" style="border-top:1px solid #EFEFF0;">
-      <h2 style="font-family:var(--epc-serif);font-size:18px;font-weight:700;color:#1C1D1E;">{% trans "Scope" %}</h2>
+    <div class="epc-section" style="border-top:1px solid var(--epc-border);">
+      <h2 style="font-family:var(--epc-serif);font-size:1.7rem;font-weight:700;">{% trans "Scope" %}</h2>
       <p class="epc-lede" style="margin-top:8px;">{% trans "The journal covers the following domains and topics. Submissions that bridge multiple domains are especially encouraged." %}</p>
       <div class="epc-grid-2">
         <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Environmental Processes" %}</h3></div>
+          <div class="epc-scope-card-head"><span class="epc-scope-num" aria-hidden="true">1</span><h3>{% trans "Environmental Processes" %}</h3></div>
           <ul>
             <li>{% trans "Biogeochemical processes and elemental cycling" %}</li>
             <li>{% trans "Chemical processes in water, soil and sediments" %}</li>
@@ -38,7 +38,7 @@
           </ul>
         </div>
         <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Environmental Chemistry" %}</h3></div>
+          <div class="epc-scope-card-head"><span class="epc-scope-num" aria-hidden="true">2</span><h3>{% trans "Environmental Chemistry" %}</h3></div>
           <ul>
             <li>{% trans "Environmental analytical chemistry" %}</li>
             <li>{% trans "Organic and inorganic contaminants" %}</li>
@@ -51,7 +51,7 @@
           </ul>
         </div>
         <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Environmental Remediation and Treatment" %}</h3></div>
+          <div class="epc-scope-card-head"><span class="epc-scope-num" aria-hidden="true">3</span><h3>{% trans "Environmental Remediation and Treatment" %}</h3></div>
           <ul>
             <li>{% trans "Chemical and physicochemical remediation" %}</li>
             <li>{% trans "Advanced oxidation processes" %}</li>
@@ -63,7 +63,7 @@
           </ul>
         </div>
         <div class="epc-scope-card">
-          <div class="epc-scope-card-head"><h3>{% trans "Integrated Environmental Chemistry" %}</h3></div>
+          <div class="epc-scope-card-head"><span class="epc-scope-num" aria-hidden="true">4</span><h3>{% trans "Integrated Environmental Chemistry" %}</h3></div>
           <ul>
             <li>{% trans "Chemistry–climate interactions" %}</li>
             <li>{% trans "Chemistry–ecosystem interactions" %}</li>
@@ -76,13 +76,13 @@
       </div>
     </div>
 
-    <div class="epc-section epc-prose" style="border-top:1px solid #EFEFF0;">
-      <h2>{% trans "Article Types" %}</h2>
-      <ul>
-        <li><strong>{% trans "Research Articles:" %}</strong> {% trans "Original research addressing significant advances in environmental processes, chemistry, contaminant behaviour, environmental transformation, remediation, and related interdisciplinary areas." %}</li>
-        <li><strong>{% trans "Review Articles:" %}</strong> {% trans "Critical and comprehensive evaluations of established and emerging research, highlighting advances, knowledge gaps, challenges, and future research directions." %}</li>
-        <li><strong>{% trans "Short Communications:" %}</strong> {% trans "Concise reports of novel and scientifically significant findings that warrant rapid communication to the research community." %}</li>
-        <li><strong>{% trans "Perspectives:" %}</strong> {% trans "Expert analyses offering forward-looking views on emerging concepts, unresolved questions, research priorities, and future directions in environmental processes and chemistry." %}</li>
+    <div class="epc-section" style="border-top:1px solid var(--epc-border);">
+      <h2 style="font-family:var(--epc-serif);font-size:1.7rem;font-weight:700;">{% trans "Article Types" %}</h2>
+      <ul class="epc-types">
+        <li><span class="epc-type-title">{% trans "Research Articles" %}</span><p>{% trans "Original research addressing significant advances in environmental processes, chemistry, contaminant behaviour, environmental transformation, remediation, and related interdisciplinary areas." %}</p></li>
+        <li><span class="epc-type-title">{% trans "Review Articles" %}</span><p>{% trans "Critical and comprehensive evaluations of established and emerging research, highlighting advances, knowledge gaps, challenges, and future research directions." %}</p></li>
+        <li><span class="epc-type-title">{% trans "Short Communications" %}</span><p>{% trans "Concise reports of novel and scientifically significant findings that warrant rapid communication to the research community." %}</p></li>
+        <li><span class="epc-type-title">{% trans "Perspectives" %}</span><p>{% trans "Expert analyses offering forward-looking views on emerging concepts, unresolved questions, research priorities, and future directions in environmental processes and chemistry." %}</p></li>
       </ul>
     </div>
   </div>
