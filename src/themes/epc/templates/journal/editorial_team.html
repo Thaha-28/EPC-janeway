@@ -42,6 +42,7 @@
             </div>
             <div style="min-width:0;">
               <h3>{{ member.user.full_name }}</h3>
+              {% if member.statement %}<p class="epc-team-role">{{ member.statement }}</p>{% endif %}
               {% if member.user.affiliation %}<p class="epc-team-affil">{{ member.user.affiliation }}</p>{% endif %}
               {% if member.user.enable_public_profile %}
               <p style="margin-top:8px;font-size:12px;">

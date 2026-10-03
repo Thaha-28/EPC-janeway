@@ -335,6 +335,12 @@ for name, link, seq in _subs:
     upsert_nav(name, link, seq, parent=about)
 
 # --- Editorial groups ------------------------------------------------------
+from django.contrib.auth import get_user_model as _get_user_model
+from django.core.files.base import ContentFile as _ContentFile
+
+User = _get_user_model()
+
+groups = {}
 for seq, (name, description) in enumerate(
     [
         (
@@ -361,5 +367,115 @@ for seq, (name, description) in enumerate(
     elif not group.display_profile_images:
         group.display_profile_images = True
         group.save()
+    groups[name] = group
+
+# Board members. Titles are stored in first_name so the public board page
+# matches house style ("Dr. ..."); admins can edit names in the manager.
+# Accounts get unusable passwords: the admin must set credentials.
+import os as _os
+
+from django.conf import settings as _settings
+
+MEMBERS = [
+    {
+        "group": "Chief Editors",
+        "first_name": "Dr. Sheik Moideen Thaha",
+        "last_name": "S K",
+        "email": "sheik.moideen.thaha@example.com",
+        "department": "Department of Chemistry, School of Advanced Sciences",
+        "institution": "Vellore Institute of Technology, India",
+        "statement": "Material Science and Nanochemistry",
+        "photo": None,  # drop file at src/themes/epc/assets/img/editors/
+    },
+    {
+        "group": "Chief Editors",
+        "first_name": "Dr. A. Mohamed",
+        "last_name": "Tharik",
+        "email": "a.mohamed.tharik@example.com",
+        "department": "Department of Chemistry, School of Advanced Sciences",
+        "institution": "Vellore Institute of Technology, India",
+        "statement": "Environmental Sciences",
+        "photo": None,
+    },
+    {
+        "group": "Board of Editors",
+        "first_name": "Dr. Manoj",
+        "last_name": "Sekaran",
+        "email": "manoj.sekaran@example.com",
+        "department": "Department of Bioscience and Biotechnology",
+        "institution": "Indian Institute of Technology Kharagpur, West Bengal, India",
+        "statement": "Environmental Remediation",
+        "photo": "manoj-sekaran.png",
+    },
+    {
+        "group": "Board of Editors",
+        "first_name": "Dr. Mohanraj",
+        "last_name": "Gopikrishnan",
+        "email": "mohanraj.gopikrishnan@example.com",
+        "department": "School of Biosciences and Technology",
+        "institution": "Vellore Institute of Technology, India",
+        "statement": "Ecological Bioinformatics",
+        "photo": "mohanraj-gopikrishnan.jpeg",
+    },
+    {
+        "group": "Board of Editors",
+        "first_name": "Dr. Dhandapani",
+        "last_name": "Vinayagam",
+        "email": "dhandapani.vinayagam@example.com",
+        "department": "Department of Chemistry, School of Advanced Sciences",
+        "institution": "Vellore Institute of Technology, India",
+        "statement": "Organic Chemistry",
+        "photo": "dhandapani-vinayagam.png",
+    },
+]
+
+for seq, spec in enumerate(MEMBERS):
+    account, created = User.objects.get_or_create(
+        email=spec["email"],
+        defaults={
+            "username": spec["email"],
+            "first_name": spec["first_name"],
+            "last_name": spec["last_name"],
+            "is_active": True,
+            "enable_public_profile": True,
+        },
+    )
+    if created:
+        account.set_unusable_password()
+        account.save()
+        print(f"board account created: {spec['email']}")
+    # Affiliations (idempotent setters).
+    try:
+        account.institution = spec["institution"]
+        account.department = spec["department"]
+    except Exception as exc:  # pragma: no cover - best effort
+        print(f"WARNING: affiliation for {spec['email']}: {exc}")
+    # Photo from the theme assets, if present.
+    if spec["photo"]:
+        photo_path = _os.path.join(
+            _settings.BASE_DIR,
+            "themes",
+            "epc",
+            "assets",
+            "img",
+            "editors",
+            spec["photo"],
+        )
+        if _os.path.isfile(photo_path) and not account.profile_image:
+            with open(photo_path, "rb") as _fh:
+                account.profile_image.save(
+                    spec["photo"], _ContentFile(_fh.read()), save=True
+                )
+            print(f"board photo set: {spec['email']}")
+    membership, m_created = core_models.EditorialGroupMember.objects.get_or_create(
+        group=groups[spec["group"]],
+        user=account,
+        defaults={"sequence": seq, "statement": spec["statement"]},
+    )
+    if m_created:
+        print(f"board member added: {spec['email']} -> {spec['group']}")
+    elif membership.statement != spec["statement"]:
+        membership.statement = spec["statement"]
+        membership.save()
 
 print("EPC theme seed done.")
