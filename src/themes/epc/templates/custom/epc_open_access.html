@@ -1,0 +1,56 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+{# Custom CMS template for the Open Access and Indexing page. Select in CMS
+   admin via the "Template" field (requires
+   general.custom_cms_templates = "custom"). Free prose comes from
+   page.content; the licensing block, indexing table and fees live here. #}
+
+{% block title %}{{ page.display_name }}{% endblock title %}
+
+{% block body %}
+<div class="epc-crumbs">
+  <a href="{% url 'website_index' %}">{% trans "Home" %}</a>
+  <span> / </span>
+  <span>{{ page.display_name }}</span>
+</div>
+<div class="epc-wrap">
+  <div class="epc-card">
+    <div class="epc-section">
+      <p class="epc-kicker">{% trans "Open access" %}</p>
+      <h1 class="epc-h1">{{ page.display_name }}</h1>
+      <div class="epc-prose" style="margin-top:12px;">{{ page.content|safe }}</div>
+    </div>
+
+    <div class="epc-section epc-prose" style="border-top:1px solid #EFEFF0;">
+      <h2>{% trans "Open access" %}</h2>
+      <p>{% trans "All articles are open access and free to read immediately on publication under Creative Commons Attribution 4.0 International (CC BY 4.0). Authors retain copyright." %}</p>
+      <h3>{% trans "Licensing" %}</h3>
+      <p><strong>{% trans "Copyright:" %}</strong> &copy; 2026 {% if journal_settings.general.publisher_name %}{{ journal_settings.general.publisher_name }}{% else %}EnviNova Scientific Publishing{% endif %}<br>
+      <strong>{% trans "License:" %}</strong> {% trans "This article is published under the Creative Commons Attribution 4.0 International License" %} (<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener noreferrer">CC BY 4.0</a>).</p>
+
+      <h2>{% trans "Abstracting, Indexing &amp; Discoverability" %}</h2>
+      <div class="epc-table-wrap">
+        <table>
+          <thead>
+            <tr><th>{% trans "Service" %}</th><th>{% trans "Status" %}</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Crossref</td><td>{% trans "DOI registration and scholarly metadata" %}</td></tr>
+            <tr><td>OAI-PMH</td><td>{% trans "Enabled for metadata harvesting" %}</td></tr>
+            <tr><td>OpenAIRE</td><td>{% trans "Registration/harvesting planned" %}</td></tr>
+            <tr><td>Google Scholar</td><td>{% trans "Structured metadata and discoverability optimized" %}</td></tr>
+            <tr><td>DOAJ</td><td>{% trans "Application planned after eligibility requirements are met" %}</td></tr>
+            <tr><td>Scopus</td><td>{% trans "Future application subject to evaluation" %}</td></tr>
+            <tr><td>Web of Science</td><td>{% trans "Future application subject to evaluation" %}</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>{% trans "Publication Fees" %}</h2>
+      <p>{% trans "Environmental Processes and Chemistry currently charges no submission fees, article processing charges (APCs), page charges, colour charges, or other mandatory publication fees." %}</p>
+      <p>{% trans "All articles are published open access and are freely available to readers immediately upon publication." %}</p>
+      <p>{% trans "Editorial board details and Publisher details may be found under the ABOUT button." %}</p>
+    </div>
+  </div>
+</div>
+{% endblock body %}

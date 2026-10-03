@@ -156,5 +156,11 @@ if [ -f seed_epc.py ]; then
   python src/manage.py shell < seed_epc.py || echo "WARNING: seed failed (continuing)"
 fi
 
+# Seed EPC theme settings, CMS pages, nav and editorial groups (idempotent).
+if [ -f seed_epc_theme.py ]; then
+  echo "Seeding EPC theme content..."
+  python src/manage.py shell < seed_epc_theme.py || echo "WARNING: theme seed failed (continuing)"
+fi
+
 echo "Starting gunicorn on 0.0.0.0:${PORT}..."
 exec gunicorn core.wsgi:application --chdir src --bind "0.0.0.0:${PORT}" --workers 2 --timeout 120 --access-logfile - --error-logfile -

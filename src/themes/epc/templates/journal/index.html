@@ -1,0 +1,101 @@
+{% extends "core/base.html" %}
+{% load i18n static %}
+
+{% block title %}{{ request.journal.name }}{% endblock title %}
+
+{% block body %}
+<h1 class="sr-only">{{ request.journal.name }} {% trans 'Home Page' %}</h1>
+
+{# Hero #}
+<div class="epc-hero">
+  <h1>{{ request.journal.name }}</h1>
+  <p class="epc-hero-sub">{% trans "Open research on chemical, biological, and physical processes in natural and engineered environments." %}</p>
+  <div class="epc-hero-cta">
+    <a href="{% url 'current_issue' %}" class="epc-btn epc-btn-dark">{% trans "View current issue" %}</a>
+    <a href="{% url 'journal_submissions' %}" class="epc-btn epc-btn-light">{% trans "Submit an article" %}</a>
+  </div>
+  <p class="epc-hero-meta">Online ISSN: {% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %} &middot; {% trans "Continuous publication" %}</p>
+</div>
+
+<div class="epc-wrap">
+  <div class="epc-card">
+    {# About block #}
+    <div class="epc-section">
+      <div class="epc-section-head">
+        <h2>{% trans "About this journal" %}</h2>
+        <a href="{% url 'cms_page' "aims-scope" %}">{% trans "Full aims and scope" %}</a>
+      </div>
+      <p class="epc-lede" style="margin-top:16px;">
+        <strong>{{ request.journal.name }} (Online ISSN: {% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %})</strong>
+        {% trans "publishes research across environmental processes, chemistry, remediation and treatment, and integrated environmental chemistry. We welcome experimental, field, and modelling studies that advance process understanding from molecular to landscape scales." %}
+      </p>
+      <div class="epc-grid-4">
+        <div class="epc-scope-card">
+          <div class="epc-scope-card-head"><h3>{% trans "Environmental Processes" %}</h3></div>
+          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Climate change, monitoring, water and soil systems, pollution and remediation, modelling, risk assessment." %}</p>
+        </div>
+        <div class="epc-scope-card">
+          <div class="epc-scope-card-head"><h3>{% trans "Environmental Chemistry" %}</h3></div>
+          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Analytical chemistry, contaminants, biogeochemistry, fate and transport, soil and water chemistry, emerging pollutants." %}</p>
+        </div>
+        <div class="epc-scope-card">
+          <div class="epc-scope-card-head"><h3>{% trans "Environmental Remediation and Treatment" %}</h3></div>
+          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Chemical and physicochemical remediation, advanced oxidation processes, adsorption, photocatalysis, electrochemical processes." %}</p>
+        </div>
+        <div class="epc-scope-card">
+          <div class="epc-scope-card-head"><h3>{% trans "Integrated Environmental Chemistry" %}</h3></div>
+          <p style="padding:12px 16px;margin:0;" class="epc-muted">{% trans "Chemistry–climate and ecosystem interactions, microplastics, nanomaterials, circular economy, and resource recovery." %}</p>
+        </div>
+      </div>
+    </div>
+
+    {# Latest research from the current issue #}
+    {% if request.journal.current_issue %}
+    <div class="epc-section" style="border-top:1px solid #EFEFF0;">
+      <div class="epc-section-head">
+        <h2>{% trans "Latest research" %}</h2>
+        <a href="{% url 'current_issue' %}">{% trans "View current issue" %}</a>
+      </div>
+      <p class="epc-muted" style="margin-top:8px;">{% trans "Selected articles from the current issue." %}</p>
+      <div class="epc-grid-2">
+        {% for article in request.journal.current_issue.get_sorted_articles|slice:":4" %}
+        <article class="epc-article-card">
+          <div style="min-width:0;flex:1;">
+            <div>
+              <span class="epc-tag">{{ article.section.name|default:"Research Article" }}</span>
+              {% if article.date_published %}<span class="epc-muted" style="margin-left:8px;">{{ article.date_published|date:"M d, Y" }}</span>{% endif %}
+            </div>
+            <h3><a href="{{ article.url }}">{{ article.title }}</a></h3>
+            <p class="epc-authors">{% for author in article.frozen_authors.all %}{{ author.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+            {% if article.abstract %}<p class="epc-abstract">{{ article.abstract|striptags|truncatewords:40 }}</p>{% endif %}
+            <p style="margin-top:12px;font-size:12px;">
+              <a href="{{ article.url }}" style="font-weight:500;color:#1C1D1E;">{% trans "Read article" %}</a>
+              {% if article.get_doi_url %}
+              <a href="{{ article.get_doi_url }}" target="_blank" rel="noopener" class="epc-muted" style="margin-left:12px;">{{ article.get_doi }}</a>
+              {% endif %}
+            </p>
+          </div>
+        </article>
+        {% endfor %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# Info block #}
+    <div class="epc-section" style="border-top:1px solid #EFEFF0;background:#F8F9FA;">
+      <div class="epc-grid-2" style="margin-top:0;">
+        <div>
+          <h3 style="font-size:14px;font-weight:600;color:#1C1D1E;">{% trans "A venue for impactful environmental research" %}</h3>
+          <p class="epc-lede" style="margin-top:8px;">{% trans "Our editorial process follows COPE and WAME guidance to ensure transparency and integrity." %}</p>
+        </div>
+        <div class="epc-scope-card" style="padding:20px;">
+          <p style="font-size:14px;font-weight:600;color:#1C1D1E;margin:0;">{% trans "Ready to submit" %}</p>
+          <p class="epc-lede" style="margin-top:8px;">{% trans "Manuscripts are handled through our online submission system for secure peer review and editorial tracking." %}</p>
+          <a href="{% url 'journal_submissions' %}" class="epc-btn epc-btn-dark" style="margin-top:16px;width:100%;box-sizing:border-box;">{% trans "Start submission" %}</a>
+          <a href="{% url 'cms_page' "author-guidelines" %}" class="epc-btn epc-btn-light" style="margin-top:8px;width:100%;box-sizing:border-box;">{% trans "Read author guidelines" %}</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock body %}

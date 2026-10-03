@@ -1,0 +1,58 @@
+{% load i18n static %}
+{# EPC 4-column dark footer. All links forced white for WCAG AA contrast. #}
+<div class="epc-footer">
+  <div class="epc-footer-inner">
+    <div>
+      <p class="epc-footer-brand">Environmental Processes and Chemistry</p>
+      <p class="mt-3" style="margin-top:12px;">Peer reviewed. Open access. All articles under CC BY 4.0.</p>
+      <p class="epc-footer-meta">
+        {% if request.journal.issn %}Online ISSN: {{ request.journal.issn }}<br>{% endif %}
+        {% if journal_settings.general.publisher_name %}{{ journal_settings.general.publisher_name }}<br>{% endif %}
+        {% if journal_settings.general.main_contact %}
+          <a href="mailto:{{ journal_settings.general.main_contact }}">{{ journal_settings.general.main_contact }}</a>
+        {% endif %}
+      </p>
+    </div>
+
+    <div>
+      <h3>{% trans "Explore" %}</h3>
+      <ul>
+        <li><a href="{% url 'current_issue' %}">{% trans "Current Issue" %}</a></li>
+        <li><a href="{% url 'journal_issues' %}">{% trans "Archives" %}</a></li>
+        <li><a href="{% url 'cms_page' "aims-scope" %}">{% trans "Aims and Scope" %}</a></li>
+        <li><a href="{% url 'cms_page' "author-guidelines" %}">{% trans "Author Guidelines" %}</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h3>{% trans "Policies and information" %}</h3>
+      <ul>
+        <li><a href="{% url 'cms_page' "editorial-policies" %}">{% trans "Editorial and Ethics Policies" %}</a></li>
+        <li><a href="{% url 'cms_page' "open-access" %}">{% trans "Open Access and Indexing" %}</a></li>
+        <li><a href="{% url 'editorial_team' %}">{% trans "Editorial Board" %}</a></li>
+        <li><a href="{% url 'contact' %}">{% trans "Contact" %}</a></li>
+      </ul>
+    </div>
+
+    <div class="epc-footer-box">
+      <h3>{% trans "Submit and access" %}</h3>
+      <p style="margin-top:8px;">{% trans "Submission and peer review are handled through our secure online system, with all editorial correspondence tracked in one place." %}</p>
+      <a href="{% url 'submission_start' %}" class="epc-btn epc-btn-dark-cta" style="background:#fff;">{% trans "Submit a manuscript" %}</a>
+      <a href="{% url 'contact' %}" class="epc-btn epc-btn-outline-light">{% trans "Contact the editors" %}</a>
+    </div>
+  </div>
+</div>
+<div class="epc-footer-strip">
+  <div class="epc-footer-strip-inner">
+    <p style="margin:0;">{% trans "Copyright" %} 2026 {% if journal_settings.general.publisher_name %}{{ journal_settings.general.publisher_name }}{% else %}{{ request.journal.name }}{% endif %}. {% trans "Published continuously." %}</p>
+    <p style="margin:0;">
+      <a href="{% url 'website_sitemap' %}">{% trans "Sitemap" %}</a>
+      &nbsp;|&nbsp;
+      {% if journal_settings.general.privacy_policy_url %}
+        <a href="{{ journal_settings.general.privacy_policy_url }}">{% trans "Privacy" %}</a>
+      {% else %}
+        <a href="{% url 'cms_page' "privacy" %}">{% trans "Privacy" %}</a>
+      {% endif %}
+    </p>
+  </div>
+</div>

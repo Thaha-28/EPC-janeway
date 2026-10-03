@@ -1,0 +1,22 @@
+{% extends "core/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page.display_name }}{% endblock title %}
+
+{% block body %}
+<div class="epc-crumbs">
+  <a href="{% url 'website_index' %}">{% trans "Home" %}</a>
+  <span> / </span>
+  <span>{{ page.display_name }}</span>
+</div>
+<div class="epc-wrap">
+  <div class="epc-card">
+    <div class="epc-section">
+      <h1 class="epc-h1">{{ page.display_name }}</h1>
+    </div>
+    <div class="epc-section epc-prose" style="border-top:1px solid #EFEFF0;">
+      {{ page.content|safe }}
+    </div>
+  </div>
+</div>
+{% endblock body %}
