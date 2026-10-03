@@ -1076,6 +1076,49 @@ def publish(request):
 
 
 @editor_user_required
+def _notify_epc_frontends(article_pk):
+    """EPC local addition: POST to each configured frontend revalidate
+    endpoint so a newly published article appears without waiting for ISR.
+
+    Runs in a daemon thread with a short timeout; all errors are swallowed.
+    No-op unless FRONTEND_REVALIDATE_URLS and FRONTEND_REVALIDATE_SECRET
+    are set in the environment.
+    """
+    import threading
+
+    urls = [
+        u.strip()
+        for u in os.environ.get("FRONTEND_REVALIDATE_URLS", "").split(",")
+        if u.strip()
+    ]
+    secret = os.environ.get("FRONTEND_REVALIDATE_SECRET", "")
+    if not urls or not secret:
+        return
+
+    def _post():
+        try:
+            import requests
+
+            payload = {
+                "paths": ["/", "/current", "/archives"],
+                "articleIds": [article_pk],
+            }
+            for base in urls:
+                try:
+                    requests.post(
+                        base.rstrip("/") + "?secret=" + secret,
+                        json=payload,
+                        timeout=8,
+                    )
+                except Exception:
+                    continue
+        except Exception:
+            pass
+
+    thread = threading.Thread(target=_post, daemon=True)
+    thread.start()
+
+
 def publish_article(request, article_id):
     """
     View allows user to set an article for publication
@@ -1254,6 +1297,19 @@ def publish_article(request, article_id):
                 task_object=article,
                 **kwargs,
             )
+
+            # EPC local addition: notify the public Next.js frontend(s) so
+            # the newly published article (and refreshed issue lists) appear
+            # immediately via on-demand ISR revalidation. Best-effort and
+            # asynchronous: never blocks or fails the publish request.
+            # Configure with env vars on the Janeway service:
+            #   FRONTEND_REVALIDATE_URLS=https://<frontend>/api/revalidate[, ...]
+            #   FRONTEND_REVALIDATE_SECRET=<same value as the frontend's
+            #     REVALIDATE_SECRET>
+            try:
+                _notify_epc_frontends(article.pk)
+            except Exception:
+                pass
 
             # Attempt to register xref DOI
             for identifier in article.identifier_set.all():
