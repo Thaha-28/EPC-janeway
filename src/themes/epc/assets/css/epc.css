@@ -151,7 +151,8 @@ header.main-header {
 }
 .epc-brand {
   display: inline-flex; align-items: center; gap: 12px;
-  text-decoration: none; color: var(--epc-ink); min-width: 0;
+  text-decoration: none; color: var(--epc-ink);
+  flex: 1 1 auto; min-width: 0;
 }
 .epc-brand:hover { text-decoration: none; }
 .epc-brand-mark {
@@ -161,7 +162,7 @@ header.main-header {
   padding: 3px; background: var(--epc-card);
 }
 .epc-brand-mark img, .epc-brand-mark svg { max-height: 40px; max-width: 40px; width: auto; height: auto; object-fit: contain; }
-.epc-brand-text { display: flex; flex-direction: column; min-width: 0; }
+.epc-brand-text { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
 .epc-brand-name {
   font-family: var(--epc-serif); font-size: 1.2rem; font-weight: 700;
   letter-spacing: -0.015em; line-height: 1.15; color: var(--epc-ink);
@@ -172,7 +173,8 @@ header.main-header {
   margin-top: 3px;
 }
 .epc-header-tools {
-  margin-left: auto; display: flex; align-items: center; gap: 10px; min-width: 0;
+  margin-left: auto; display: flex; align-items: center; gap: 10px;
+  flex: 0 0 auto; min-width: 0;
 }
 .epc-icon-btn {
   display: inline-flex; align-items: center; justify-content: center;
