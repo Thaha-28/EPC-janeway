@@ -51,12 +51,12 @@ if journal.issn != "Pending Assignment":
     journal.issn = "Pending Assignment"
     print("journal issn set to Pending Assignment")
 
-# Nav flags: Home, Current(custom), About(custom), Issues, Editorial Team,
-# Submission, Contact, Start Submission. No news/reviewer/articles-list.
+# Nav flags: Home, Current Issue (fixed in theme nav), Articles, Issues,
+# About(custom dropdown), Editorial Board, Submission, Contact, Start CTA.
 for flag, value in [
     ("nav_home", True),
     ("nav_news", False),
-    ("nav_articles", False),
+    ("nav_articles", True),
     ("nav_issues", True),
     ("nav_contact", True),
     ("nav_sub", True),
@@ -320,19 +320,27 @@ def upsert_nav(link_name, link, sequence, has_sub_nav=False, parent=None,
         print(f"nav item updated: {link_name}")
     return item
 
-current = upsert_nav("Current Issue", "epc/issue/current/", 10)
 about = upsert_nav("About", None, 20, has_sub_nav=True)
 _subs = [
     ("Aims and Scope", "epc/site/aims-scope", 1),
-    ("Editorial Board", "epc/editorialteam/", 2),
-    ("Author Guidelines", "epc/site/author-guidelines", 3),
-    ("Editorial and Ethics Policies", "epc/site/editorial-policies", 4),
-    ("Open Access and Indexing", "epc/site/open-access", 5),
-    ("Publisher Details", "epc/site/publisher", 6),
-    ("Contact", "epc/contact/", 7),
+    ("Author Guidelines", "epc/site/author-guidelines", 2),
+    ("Editorial and Ethics Policies", "epc/site/editorial-policies", 3),
+    ("Open Access and Indexing", "epc/site/open-access", 4),
+    ("Publisher Details", "epc/site/publisher", 5),
 ]
 for name, link, seq in _subs:
     upsert_nav(name, link, seq, parent=about)
+
+# The theme nav renders Current Issue as a fixed item and keeps Editorial
+# Board / Contact at the top level, so drop the older duplicates.
+_obsolete = ["Current Issue", "Editorial Board", "Contact", "Articles", "All Issues"]
+for _name in _obsolete:
+    _qs = cms_models.NavigationItem.objects.filter(
+        content_type=ct, object_id=journal.pk, link_name=_name
+    )
+    if _qs.exists():
+        print(f"nav item removed: {_name}")
+        _qs.delete()
 
 # --- Editorial groups ------------------------------------------------------
 from django.contrib.auth import get_user_model as _get_user_model

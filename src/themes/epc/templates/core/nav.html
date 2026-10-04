@@ -4,15 +4,33 @@
 <nav id="epc-nav" class="epc-nav" aria-label="{% trans 'Primary' %}" data-open="false">
   <div class="epc-nav-inner">
     <ul class="epc-nav-list" id="epc-nav-list">
-      {% if request.journal.nav_home %}
+{% if request.journal.nav_home %}
         <li>
           <a href="{% url 'website_index' %}"{% if request.resolver_match.url_name == 'website_index' %} aria-current="page"{% endif %}>{% trans 'Journal Home' %}</a>
         </li>
       {% endif %}
 
-      {% if request.journal.nav_news %}
+      {% if request.journal.nav_issues %}
+        <li>
+          <a href="{% url 'current_issue' %}"{% if request.resolver_match.url_name == 'current_issue' %} aria-current="page"{% endif %}>{% trans 'Current Issue' %}</a>
+        </li>
+      {% endif %}
+
+{% if request.journal.nav_news %}
         <li>
           <a href="{% url 'core_news_list' %}"{% if request.resolver_match.url_name == 'core_news_list' %} aria-current="page"{% endif %}>{{ journal_settings.news.news_title }}</a>
+        </li>
+      {% endif %}
+
+      {% if request.journal.nav_articles %}
+        <li>
+          <a href="{% url 'journal_articles' %}"{% if request.resolver_match.url_name == 'journal_articles' %} aria-current="page"{% endif %}>{% trans 'Articles' %}</a>
+        </li>
+      {% endif %}
+
+{% if request.journal.nav_issues %}
+        <li>
+          <a href="{% url 'journal_issues' %}"{% if request.resolver_match.url_name == 'journal_issues' %} aria-current="page"{% endif %}>{% trans 'All Issues' %}</a>
         </li>
       {% endif %}
 
@@ -40,18 +58,6 @@
           </li>
         {% endif %}
       {% endfor %}
-
-      {% if request.journal.nav_articles %}
-        <li>
-          <a href="{% url 'journal_articles' %}"{% if request.resolver_match.url_name == 'journal_articles' %} aria-current="page"{% endif %}>{% trans 'Articles' %}</a>
-        </li>
-      {% endif %}
-
-      {% if request.journal.nav_issues %}
-        <li>
-          <a href="{% url 'journal_issues' %}"{% if request.resolver_match.url_name == 'journal_issues' %} aria-current="page"{% endif %}>{% trans 'All Issues' %}</a>
-        </li>
-      {% endif %}
 
       {% if journal_settings.general.enable_editorial_display %}
         {% if journal_settings.general.multi_page_editorial %}
