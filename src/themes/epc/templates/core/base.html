@@ -22,9 +22,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet">
 
     {% if request.journal %}
-        <link href="{% static "OLH/css/default_override.css" %}" rel="stylesheet">
-        <link href="{% static "OLH/css/journal" %}{{ request.journal.id }}_override.css" rel="stylesheet">
-        {# EPC theme design system (loads last so EPC rules win) #}
         <link href="{% static "epc/css/epc.css" %}" rel="stylesheet">
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -56,20 +53,92 @@
 <body>
 {% include "common/elements/skip_to_main_content.html" %}
 <div class="wrapper">
-    <header class="main-header">
+    <header class="main-header{% if request.journal %} epc-header{% endif %}">
+        {% if request.journal %}
+        <div class="epc-header-bar">
+            <a class="epc-brand" href="{{ request.journal.site_url }}" title="{% trans 'Home' %}">
+                {% if request.journal.header_image %}
+                    {% get_alt_text file_path=request.journal.header_image default=request.journal.name as header_alt_text %}
+                    <span class="epc-brand-mark">{% svg_or_image request.journal.header_image css_class='epc-brand-logo' alt_text=header_alt_text %}</span>
+                {% endif %}
+                <span class="epc-brand-text">
+                    <span class="epc-brand-name">{{ request.journal.name }}</span>
+                    <span class="epc-brand-tagline">{% trans "Peer reviewed open access journal" %}</span>
+                </span>
+                <span class="sr-only">{% trans 'Home' %}</span>
+            </a>
+
+            <div class="epc-header-tools">
+                <form class="epc-search" id="epc-search" data-open="false" role="search" method="POST" action="{% url 'search' %}">
+                    {% csrf_token %}
+                    <label class="sr-only" for="epc-search-input">{% trans 'Search' %}</label>
+                    <input id="epc-search-input" class="epc-search-input" type="search" name="article_search" value="{{ request.POST.article_search|default:'' }}" placeholder="{% trans 'Search articles' %}">
+                    <input type="hidden" name="sort" value="title">
+                    <button class="epc-search-submit" type="submit">{% trans 'Search' %}</button>
+                </form>
+                <button type="button" class="epc-icon-btn epc-search-toggle" aria-expanded="false" aria-controls="epc-search">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4.5-4.5"/></svg>
+                    <span class="sr-only">{% trans 'Toggle search' %}</span>
+                </button>
+
+                <div class="epc-account">
+                    {% if request.user.is_authenticated %}
+                        <span class="epc-nav-drop">
+                            <button type="button" class="epc-account-btn" aria-expanded="false" aria-haspopup="true" aria-controls="epc-account-menu">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+                                <span class="epc-account-name">{{ request.user.full_name }}</span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                            </button>
+                            <ul class="epc-account-menu" id="epc-account-menu" hidden>
+                                <li><a href="{% url 'core_dashboard' %}">{% trans 'Dashboard' %}</a></li>
+                                {% if not journal_settings.general.disable_journal_submission %}
+                                    <li><a href="{% url 'submission_start' %}">{% trans 'Start a submission' %}</a></li>
+                                {% endif %}
+                                {% user_has_role request 'editor' as user_is_editor %}
+                                {% if user_is_editor or request.user.is_staff %}
+                                    <li><a href="{% url 'kanban' %}">{% trans 'Editorial Kanban' %}</a></li>
+                                    <li><a href="{% url 'core_manager_index' %}">{% trans 'Manager' %}</a></li>
+                                {% endif %}
+                                {% if request.user.is_staff %}
+                                    <li><a href="/admin/">{% trans 'Admin' %}</a></li>
+                                {% endif %}
+                                <li><a href="{% url 'core_edit_profile' %}">{% trans 'Profile' %}</a></li>
+                                <li><a href="{% url 'core_logout' %}">{% trans 'Logout' %}</a></li>
+                            </ul>
+                        </span>
+                    {% else %}
+                        <a class="epc-account-link" href="{% url 'core_login' %}">{% trans "Log in" %}</a>
+                        <a class="epc-btn epc-btn-dark epc-btn-sm" href="{% url 'core_register' %}">{% trans "Register" %}</a>
+                    {% endif %}
+                </div>
+
+                <button type="button" class="epc-icon-btn epc-hamburger" aria-expanded="false" aria-controls="epc-nav-list">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                    <span class="sr-only">{% trans 'Menu' %}</span>
+                </button>
+            </div>
+        </div>
+
+        {% hook 'language_header' %}
+        {% if journal_settings.general.switch_language %}
+        <div class="epc-language">
+            {% get_current_language as LANGUAGE_CODE %}
+            {% get_available_languages as LANGUAGES %}
+            {% get_language_info_list for LANGUAGES as languages %}
+            {% for language in languages %}
+                {% if language.code in request.available_languages %}
+                <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
+                    <input name="next" type="hidden" value="{{ request.PATH }}"/>
+                    <button name="language" value="{{ language.code }}" class="epc-language-btn{% if language.code == LANGUAGE_CODE %} is-active{% endif %}">{{ language.name_local }}</button>
+                </form>
+                {% endif %}
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% else %}
         <div class="main top-bar">
             <div class="top-bar-left header-image-bar border-right">
-                {% if request.journal %}
-                    <a title="{% trans 'Home' %}" href="{{ request.journal.site_url }}">
-                        {% if request.journal.header_image %}
-                            {% get_alt_text file_path=request.journal.header_image default=request.journal.name as header_alt_text %}
-                            {% svg_or_image request.journal.header_image css_class='header-image top-bar-image' alt_text=header_alt_text %}
-                        {% else %}
-                                <img src="{% static "common/img/sample/janeway.png" %}">
-                        {% endif %}
-                        <span class="sr-only">{% trans 'Home' %}</span>
-                    </a>
-                {% elif request.repository %}
+                {% if request.repository %}
                     {% if request.repository.logo %}
                         {% svg_or_image request.repository.logo %}
                     {% else %}
@@ -89,62 +158,20 @@
                         </a>
                     {% endif %}
                 {% endif %}
-            {% if request.journal  and journal_settings.styling.display_journal_title %}
-            <div class="hide-for-medium-only{% if journal_settings.general.switch_language %} border-right{% endif %}" id="journal-title">
-                <p class="menu-text">{{ request.journal.name }}</p>
-            </div>
-            {% endif %}
-
                 <div class="title-bar toggle">
                     <div data-responsive-toggle="main-menu" data-hide-for="medium">
                         <button type="button" class="btn btn-link" data-responsive-toggle="main-menu" data-hide-for="medium" data-toggle aria-label="{% trans 'Toggle main menu' %}" aria-haspopup="true" aria-expanded="false">
                             <span aria-hidden="true" class="menu-icon"></span>
                         </button>
                     </div>
-                    <div data-responsive-toggle="search-menu" data-hide-for="medium">
-                        <button type="button" class="btn btn-link search-toggle" data-toggle aria-label="{% trans 'Toggle search' %}" aria-haspopup="true" aria-expanded="false">
-                            <i aria-hidden="true" class="fa fa-search"></i>
-                        </button>
-                    </div>
                 </div>
             </div>
-            {% hook 'language_header' %}
-            {% if journal_settings.general.switch_language %}
-                <div class="top-bar-left">
-                <ul class="menu language-menu">
-                    {% get_current_language as LANGUAGE_CODE %}
-                    {% get_available_languages as LANGUAGES %}
-                    {% get_language_info_list for LANGUAGES as languages %}
-
-                    {% for language in languages %}
-                        {% if language.code in request.available_languages %}
-                        <li>
-                            <form action="{% url 'set_language' %}" method="post">{% csrf_token %}
-                                <input name="next" type="hidden" value="{{ request.PATH }}"/>
-                                {% if journal_settings.general.enable_language_text %}
-                                    <button name="language" value="{{ language.code }}" class="tiny success button{% if language.code == LANGUAGE_CODE %} flag-active{% endif %}">{{ language.name_local }}</button>&nbsp;
-                                {% else %}
-                                <button class="flag-button{% if language.code == LANGUAGE_CODE %} flag-active{% endif %}" name="language" value="{{ language.code }}"
-                                        style="background: url(/static/common/img/flags/{{ language.code }}.png) no-repeat; background-size: contain;">
-                                    &nbsp;
-                                </button>
-                                {% endif %}
-                            </form>
-                        </li>
-                        {% endif %}
-                    {% endfor %}
-
-                </ul>
-                </div>
-            {% endif %}
             <div class="top-bar-right border-left hide-for-small-only">
                 <ul class="dropdown menu" data-dropdown-menu>
                     {% if request.user.is_authenticated %}
-                        <li class=".is-dropdown-submenu-parent">
+                        <li>
                             <a href="#" data-options="is_hover:true; hover_timeout:5000">{{ request.user.full_name }}</a>
-                            {% if request.journal %}
-                                {% include "elements/right_hand_menu.html" %}
-                            {% elif request.repository %}
+                            {% if request.repository %}
                                 {% include "repository/elements/right_hand_menu.html" %}
                             {% else %}
                                 {% include "press/elements/right_hand_menu.html" %}
@@ -153,35 +180,16 @@
                     {% else %}
                       <li>
                         <p>
-                          <a href="{% url 'core_login' %}">
-                            {% trans "Log in" %}
-                          </a> |
-                          <a href="{% url 'core_register' %}">
-                            {% trans "Register" %}
-                          </a>
+                          <a href="{% url 'core_login' %}">{% trans "Log in" %}</a> |
+                          <a href="{% url 'core_register' %}">{% trans "Register" %}</a>
                         </p>
                       </li>
                     {% endif %}
                 </ul>
             </div>
-            {% if request.journal %}
-            <div class="top-bar-right hide-for-medium-only" id="search-menu">
-                <ul class="menu global-search">
-                    <li>
-                        <form method="POST" action="{% url 'search' %}">
-                            {% csrf_token %}
-                            <div class="input-group">
-                                <span class="input-group-label"><i aria-hidden="true" class="fa fa-search"></i></span>
-                                <input class="input-group-field" type="search" name="article_search" placeholder="{% trans 'Search' %}">
-                                <input type="hidden" name="sort" value="title">
-
-                            </div><input type="submit" style="visibility: hidden;" />
-                        </form>
-                    </li>
-                </ul>
-            </div>
-            {% endif %}
         </div>
+        {% hook 'language_header' %}
+        {% endif %}
         {% block navbar %}
             {% if request.journal %}
                 {% include "core/nav.html" %}
@@ -198,28 +206,18 @@
     </main>
 </div>
 
-
 <footer class="main-footer row expanded">
-        <div class="large-2 columns very-dark-primary-color text-center logo-wrapper">
-            {% if request.journal.press_image_override %}
-                {% get_alt_text file_path=request.journal.press_image_override default=request.press.name as press_alt %}
-                {% svg_or_image request.journal.press_image_override alt_text=press_alt %}
-            {% elif 'svg' in request.press_cover %}
-                <a href="{% press_url request %}" title="{{ request.press.name }}">
-                    {% svg request.press_cover %}
-                    <span class="sr-only"> {{ request.press.name }}</span>
-                </a>
-            {% else %}
-                <a href="https://janeway.systems" title="Janeway">
-                    {% svg "static/common/img/sample/janeway.svg" %}
-                    <span class="sr-only"> Janeway </span>
-                </a>
-            {% endif %}
-        </div>
         {% if request.journal %}
         {% include "elements/journal_footer.html" %}
         {% else %}
+        <div class="large-2 columns very-dark-primary-color text-center logo-wrapper">
+            {% if request.press %}{% svg request.press_cover %}{% else %}{% svg "static/common/img/sample/janeway.svg" %}{% endif %}
+        </div>
+        {% if request.repository %}
+        {% include "repository/elements/repository_footer.html" %}
+        {% else %}
         {% include "press/elements/press_footer.html" %}
+        {% endif %}
         {% endif %}
 </footer>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
@@ -260,7 +258,6 @@
             toastr.success("{{ message|linebreaksbr }}")
         {% endif %}
     {% endfor %}
-
 </script>
 {% include "common/elements/analytics.html" %}
 <script src="{% static "epc/js/epc.js" %}" defer></script>

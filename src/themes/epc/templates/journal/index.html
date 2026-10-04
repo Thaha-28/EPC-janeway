@@ -6,7 +6,6 @@
 {% block body %}
 <h1 class="epc-sr-only">{{ request.journal.name }} {% trans 'Home Page' %}</h1>
 
-{# Hero with faint molecular line pattern (inline SVG, decorative) #}
 <div class="epc-hero">
   <svg class="epc-hero-pattern" aria-hidden="true" width="100%" height="100%" preserveAspectRatio="xMidYMid slice" viewBox="0 0 1200 360">
     <g fill="none" stroke="#0F5C4D" stroke-width="1" opacity="0.14">
@@ -31,7 +30,6 @@
   </div>
 </div>
 
-{# Key facts #}
 <div class="epc-facts" role="list" aria-label="{% trans 'Journal facts' %}">
   <div class="epc-fact" role="listitem">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
@@ -53,7 +51,6 @@
 
 <div class="epc-wrap">
   <div class="epc-card">
-    {# About + side column #}
     <div class="epc-section">
       <div class="epc-split">
         <div>
@@ -81,7 +78,6 @@
       </div>
     </div>
 
-    {# Latest research from the current issue #}
     {% if request.journal.current_issue %}
     <div class="epc-section">
       <div class="epc-section-head">
@@ -113,7 +109,6 @@
     </div>
     {% endif %}
 
-    {# Sidebar-style info cards #}
     <div class="epc-section">
       <div class="epc-grid-2" style="margin-top:0;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
         <div class="epc-scope-card" style="padding:20px;">

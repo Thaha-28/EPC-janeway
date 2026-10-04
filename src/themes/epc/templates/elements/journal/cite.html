@@ -1,7 +1,4 @@
 {% load i18n %}
-{# EPC override: formatted citation + copy + RIS/BibTeX downloads.
-   Data for the JS builders is carried in hidden spans/attributes so no
-   server-side formatting is needed. #}
 {% with article.how_to_cite|safe as cite %}
 <div id="article_how_to_cite" class="epc-cite-box" data-epc-cite
      data-cite-journal="{{ request.journal.name }}"

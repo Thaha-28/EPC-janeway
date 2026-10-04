@@ -37,7 +37,6 @@
         </section>
         <section class="no-padding meta hide-for-small-only">
             <div class="row medium-12">
-              {# EPC: featured banner image removed; plain title/author heading. #}
               <div class="olh-banner epc-article-banner">
                 <div class="olh-banner-heading">
                   <p class="uppercase">{{ article.section.name }}</p>
@@ -66,9 +65,6 @@
         </div>
     {% endif %}
 
-    {# EPC: graphical abstract below the title/author heading. Uses only the
-       article's own large image (never issue/journal fallbacks); hidden when
-       the article has no image. Upload via article manager as large image. #}
     {% if article.large_image_file %}
         <section class="epc-graphical-abstract" aria-labelledby="epc-ga-title">
             <div class="row">

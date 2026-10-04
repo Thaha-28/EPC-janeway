@@ -1,67 +1,104 @@
-/* EPC theme interactions: mobile nav, dropdown keyboard support.
-   No frameworks. Respects prefers-reduced-motion (handled in CSS). */
 (function () {
   "use strict";
 
-  function closeAllDrops(except) {
+  var NAV_ID = "epc-nav";
+
+  function navRoot() {
+    return document.getElementById(NAV_ID);
+  }
+
+  function closeDrops(except) {
     var drops = document.querySelectorAll(".epc-nav-drop > button[aria-expanded='true']");
     for (var i = 0; i < drops.length; i++) {
-      if (drops[i] !== except) {
-        drops[i].setAttribute("aria-expanded", "false");
-        var ul = drops[i].parentElement.querySelector("ul");
-        if (ul) ul.hidden = true;
-      }
+      if (drops[i] === except) continue;
+      drops[i].setAttribute("aria-expanded", "false");
+      var menu = drops[i].parentElement.querySelector("ul");
+      if (menu) menu.hidden = true;
     }
   }
 
-  // About-style dropdowns: click toggles (touch + keyboard), Escape closes.
+  function toggleDrop(btn) {
+    var willOpen = btn.getAttribute("aria-expanded") !== "true";
+    closeDrops(btn);
+    btn.setAttribute("aria-expanded", willOpen ? "true" : "false");
+    var menu = btn.parentElement.querySelector("ul");
+    if (menu) menu.hidden = !willOpen;
+    return willOpen;
+  }
+
+  function setNav(open) {
+    var nav = navRoot();
+    if (!nav) return;
+    nav.setAttribute("data-open", open ? "true" : "false");
+    var burger = document.querySelector(".epc-hamburger");
+    if (burger) burger.setAttribute("aria-expanded", open ? "true" : "false");
+  }
+
+  function setSearch(open) {
+    var form = document.getElementById("epc-search");
+    if (!form) return;
+    form.setAttribute("data-open", open ? "true" : "false");
+    var toggle = document.querySelector(".epc-search-toggle");
+    if (toggle) toggle.setAttribute("aria-expanded", open ? "true" : "false");
+    if (open) {
+      var input = document.getElementById("epc-search-input");
+      if (input) input.focus();
+    }
+  }
+
   document.addEventListener("click", function (ev) {
-    var btn = ev.target.closest(".epc-nav-drop > button");
-    if (btn) {
-      var open = btn.getAttribute("aria-expanded") === "true";
-      closeAllDrops(btn);
-      btn.setAttribute("aria-expanded", open ? "false" : "true");
-      var ul = btn.parentElement.querySelector("ul");
-      if (ul) ul.hidden = open;
+    var dropBtn = ev.target.closest(".epc-nav-drop > button");
+    if (dropBtn) {
+      toggleDrop(dropBtn);
       return;
     }
-    if (!ev.target.closest(".epc-nav-drop")) closeAllDrops(null);
-  });
-  document.addEventListener("keydown", function (ev) {
-    if (ev.key === "Escape") {
-      var openBtn = document.querySelector(".epc-nav-drop > button[aria-expanded='true']");
-      closeAllDrops(null);
-      if (openBtn) openBtn.focus();
-      var nav = document.querySelector(".epc-nav[data-open='true']");
-      if (nav) {
-        nav.setAttribute("data-open", "false");
-        var burger = nav.querySelector(".epc-hamburger");
-        if (burger) {
-          burger.setAttribute("aria-expanded", "false");
-          burger.focus();
-        }
-      }
+    if (!ev.target.closest(".epc-nav-drop")) closeDrops(null);
+
+    var burger = ev.target.closest(".epc-hamburger");
+    if (burger) {
+      var nav = navRoot();
+      if (nav) setNav(nav.getAttribute("data-open") !== "true");
+      return;
+    }
+
+    var searchToggle = ev.target.closest(".epc-search-toggle");
+    if (searchToggle) {
+      var form = document.getElementById("epc-search");
+      if (form) setSearch(form.getAttribute("data-open") !== "true");
+      return;
+    }
+
+    if (!ev.target.closest(".epc-header")) {
+      setSearch(false);
+      var openNav = navRoot();
+      if (openNav && window.matchMedia("(max-width: 1100px)").matches) setNav(false);
     }
   });
 
-  // Mobile hamburger.
-  document.addEventListener("click", function (ev) {
-    var burger = ev.target.closest(".epc-hamburger");
-    if (!burger) return;
-    var nav = burger.closest(".epc-nav");
-    if (!nav) return;
-    var open = nav.getAttribute("data-open") === "true";
-    nav.setAttribute("data-open", open ? "false" : "true");
-    burger.setAttribute("aria-expanded", open ? "false" : "true");
+  document.addEventListener("keydown", function (ev) {
+    if (ev.key !== "Escape") return;
+    var openBtn = document.querySelector(".epc-nav-drop > button[aria-expanded='true']");
+    closeDrops(null);
+    if (openBtn) openBtn.focus();
+    var nav = navRoot();
+    if (nav && nav.getAttribute("data-open") === "true") {
+      setNav(false);
+      var burger = document.querySelector(".epc-hamburger");
+      if (burger) burger.focus();
+    }
+    setSearch(false);
   });
 
-  // Sync OLH header toggles (Foundation) with aria when present.
-  document.addEventListener("click", function (ev) {
-    var t = ev.target.closest("[data-responsive-toggle]");
-    if (!t) return;
-    window.setTimeout(function () {
-      var target = document.getElementById(t.getAttribute("data-responsive-toggle"));
-      if (target) t.setAttribute("aria-expanded", target.style.display === "none" ? "false" : "true");
-    }, 50);
+  document.addEventListener("focusin", function (ev) {
+    var drop = ev.target.closest(".epc-nav-drop");
+    if (drop) {
+      var btn = drop.querySelector("button");
+      if (btn && btn.getAttribute("aria-expanded") !== "true") {
+        closeDrops(btn);
+        btn.setAttribute("aria-expanded", "true");
+        var menu = drop.querySelector("ul");
+        if (menu) menu.hidden = false;
+      }
+    }
   });
 })();
