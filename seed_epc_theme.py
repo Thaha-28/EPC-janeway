@@ -323,17 +323,24 @@ def upsert_nav(link_name, link, sequence, has_sub_nav=False, parent=None,
 about = upsert_nav("About", None, 20, has_sub_nav=True)
 _subs = [
     ("Aims and Scope", "epc/site/aims-scope", 1),
-    ("Author Guidelines", "epc/site/author-guidelines", 2),
-    ("Editorial and Ethics Policies", "epc/site/editorial-policies", 3),
-    ("Open Access and Indexing", "epc/site/open-access", 4),
-    ("Publisher Details", "epc/site/publisher", 5),
+    ("Editorial and Ethics Policies", "epc/site/editorial-policies", 2),
+    ("Open Access and Indexing", "epc/site/open-access", 3),
+    ("Publisher Details", "epc/site/publisher", 4),
 ]
 for name, link, seq in _subs:
     upsert_nav(name, link, seq, parent=about)
 
-# The theme nav renders Current Issue as a fixed item and keeps Editorial
-# Board / Contact at the top level, so drop the older duplicates.
-_obsolete = ["Current Issue", "Editorial Board", "Contact", "Articles", "All Issues"]
+# The theme nav renders Home, Current Issue, All Issues (dropdown), About,
+# Editorial Board, Guides and Contact itself, so drop the older duplicates.
+_obsolete = [
+    "Current Issue",
+    "Editorial Board",
+    "Contact",
+    "Articles",
+    "All Issues",
+    "Author Guidelines",
+    "Submission",
+]
 for _name in _obsolete:
     _qs = cms_models.NavigationItem.objects.filter(
         content_type=ct, object_id=journal.pk, link_name=_name

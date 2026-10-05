@@ -84,8 +84,13 @@ with open(_os.path.join(_settings.BASE_DIR, 'utils/install/roles.json')) as _f:
 for _r in _roles:
     core_models.Role.objects.get_or_create(slug=_r['fields']['slug'], defaults={'name': _r['fields']['name']})
 print('roles exist:', core_models.Role.objects.count())
-press, created = press_models.Press.objects.get_or_create(domain=domain, defaults={'name': 'EPC Press', 'main_contact': 'editors@epc-journal.org'})
+press, created = press_models.Press.objects.get_or_create(domain=domain, defaults={'name': 'EnviNova Scientific Publishing', 'main_contact': 'editors@epc-journal.org'})
 print('press created:', domain) if created else print('press exists:', press.name)
+# Publisher identity (idempotent rename for presses bootstrapped as 'EPC Press').
+if press.name != 'EnviNova Scientific Publishing':
+    press.name = 'EnviNova Scientific Publishing'
+    press.save()
+    print('press renamed to EnviNova Scientific Publishing')
 journal = journal_models.Journal.objects.filter(code='epc').first()
 if journal is None:
     install.journal(name='Environmental Processes and Chemistry', code='epc', base_url='', delete=False)
@@ -112,7 +117,7 @@ if journal.print_issn:
     journal.print_issn = ''
     print('print issn cleared')
 from utils import setting_handler
-setting_handler.save_setting('general', 'publisher_name', journal, 'Environmental Processes and Chemistry')
+setting_handler.save_setting('general', 'publisher_name', journal, 'EnviNova Scientific Publishing')
 setting_handler.save_setting('general', 'publisher_url', journal, 'https://epc-journal.org')
 # Press footer middle column content.
 if not press.footer_description:
@@ -147,6 +152,20 @@ if not journal.press_image_override or not _op.exists(journal.press_image_overri
         journal.press_image_override.delete(save=False)
     journal.press_image_override.save('epc-logo.svg', _ContentFile(_svg), save=True)
     print('journal footer image set')
+# Journal cover art (the book image used on journal and press pages).
+_cover_src = 'src/themes/epc/assets/img/envinova-journal-cover.png'
+if not _op.exists(_cover_src):
+    print('WARNING: journal cover art missing at ' + _cover_src)
+else:
+    with open(_cover_src, 'rb') as _cf:
+        _cover_bytes = _cf.read()
+    for _field in ('default_large_image', 'default_cover_image'):
+        _current = getattr(journal, _field, None)
+        if not _current or not _op.exists(_current.path):
+            if _current:
+                _current.delete(save=False)
+            getattr(journal, _field).save('envinova-journal-cover.png', _ContentFile(_cover_bytes), save=True)
+            print('journal ' + _field + ' set')
 " || echo "WARNING: site bootstrap failed (continuing)"
 
 # Seed EPC demo content (idempotent, no-op if journal missing).

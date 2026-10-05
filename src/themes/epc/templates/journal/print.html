@@ -1,0 +1,52 @@
+{% load static %}
+{% load hooks %}
+{% load i18n %}
+<html lang="{{ request.current_language }}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% include "common/elements/journal/article_title.html" %}</title>
+  {% include "elements/article_meta_tags.html" %}
+  <link href="{% static "epc/css/epc.css" %}" rel="stylesheet">
+  <style>
+    body { background: #FAFBFA; margin: 0; padding: 0 16px 48px; }
+    .epc-print-sheet { max-width: 780px; margin: 0 auto; background: #FFFFFF; padding: 48px; border: 1px solid #E2E8E5; border-radius: 8px; }
+    .epc-print-bar { max-width: 780px; margin: 0 auto; padding: 16px 0; display: flex; gap: 12px; align-items: center; }
+    .epc-print-bar p { margin: 0; font-size: 14px; color: #5B6761; }
+    .epc-print-sheet .epc-kicker { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: #5B6761; margin: 0 0 8px; }
+    .epc-print-sheet h1 { font-size: 26px; line-height: 1.25; margin: 0 0 12px; }
+    .epc-print-sheet h2 { font-size: 18px; margin: 28px 0 8px; }
+    .epc-print-sheet p, .epc-print-sheet li { font-size: 15px; line-height: 1.65; color: #1B2420; }
+    .epc-print-sheet a { color: #0F5C4D; }
+    .epc-print-sheet img, .epc-print-sheet table, .epc-print-sheet figure { max-width: 100%; height: auto; }
+    .epc-print-sheet table { border-collapse: collapse; width: 100%; }
+    .epc-print-sheet th, .epc-print-sheet td { border: 1px solid #E2E8E5; padding: 8px; text-align: left; }
+    @media print {
+      body { background: #FFFFFF; padding: 0; }
+      .epc-print-bar { display: none; }
+      .epc-print-sheet { border: 0; border-radius: 0; padding: 0; max-width: none; }
+    }
+  </style>
+</head>
+<body>
+<div class="epc-print-bar">
+  <button type="button" class="epc-btn epc-btn-dark" onclick="window.print()">{% trans "Print this article" %}</button>
+  <button type="button" class="epc-btn epc-btn-light" onclick="window.close()">{% trans "Close" %}</button>
+  <p>{% trans "Use your browser print dialogue to save as PDF." %}</p>
+</div>
+<article class="epc-print-sheet">
+  <p class="epc-kicker">{{ article.section.name }}</p>
+  <h1>{{ article.title|safe }}</h1>
+  <p><strong>{% blocktrans count counter=article.frozen_authors.count %}Author{% plural %}Authors{% endblocktrans %}:</strong> {% include "common/elements/journal/article_authors_full.html" %}</p>
+  <h2>{% trans "Abstract" %}</h2>
+  <p>{{ article.abstract|safe }}</p>
+  {% if article.keywords %}
+    <h2>{% trans "Keywords" %}</h2>
+    <p>{% for keyword in article.keywords.all %}{{ keyword.word }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+  {% endif %}
+  <h2>{% trans "How to Cite" %}</h2>
+  <p>{% include "elements/journal/how_to_cite.html" with article=article %}</p>
+  {% if article_content %}{{ article_content|safe }}{% endif %}
+</article>
+</body>
+</html>

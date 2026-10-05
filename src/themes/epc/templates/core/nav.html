@@ -6,7 +6,7 @@
     <ul class="epc-nav-list" id="epc-nav-list">
 {% if request.journal.nav_home %}
         <li>
-          <a href="{% url 'website_index' %}"{% if request.resolver_match.url_name == 'website_index' %} aria-current="page"{% endif %}>{% trans 'Journal Home' %}</a>
+          <a href="{% url 'website_index' %}"{% if request.resolver_match.url_name == 'website_index' %} aria-current="page"{% endif %}>{% trans 'Home' %}</a>
         </li>
       {% endif %}
 
@@ -16,21 +16,27 @@
         </li>
       {% endif %}
 
-{% if request.journal.nav_news %}
-        <li>
-          <a href="{% url 'core_news_list' %}"{% if request.resolver_match.url_name == 'core_news_list' %} aria-current="page"{% endif %}>{{ journal_settings.news.news_title }}</a>
-        </li>
-      {% endif %}
-
-      {% if request.journal.nav_articles %}
-        <li>
-          <a href="{% url 'journal_articles' %}"{% if request.resolver_match.url_name == 'journal_articles' %} aria-current="page"{% endif %}>{% trans 'Articles' %}</a>
-        </li>
-      {% endif %}
-
 {% if request.journal.nav_issues %}
         <li>
-          <a href="{% url 'journal_issues' %}"{% if request.resolver_match.url_name == 'journal_issues' %} aria-current="page"{% endif %}>{% trans 'All Issues' %}</a>
+          <span class="epc-nav-drop">
+            <button type="button" aria-expanded="false" aria-haspopup="true" aria-controls="epc-subnav-issues">
+              {% trans 'All Issues' %}
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+            </button>
+            <ul id="epc-subnav-issues" hidden>
+              {% for issue in request.journal.published_issues|dictsortreversed:"date"|slice:":3" %}
+                <li>
+                  <a href="{% url 'journal_issue' issue.id %}">
+                    <span class="epc-nav-issue-title">{{ issue.issue_title|default:issue.display_title }}</span>
+                    <span class="epc-nav-issue-meta">{% trans "Volume" %} {{ issue.volume }}, {% trans "No." %} {{ issue.issue }}</span>
+                  </a>
+                </li>
+              {% endfor %}
+              <li class="epc-nav-sep"><a href="{% url 'journal_articles' %}">{% trans 'All Articles' %}</a></li>
+              <li><a href="{% url 'repository_list' %}">{% trans 'Articles in Press' %}</a></li>
+              <li class="epc-nav-sep"><a href="{% url 'journal_issues' %}">{% trans 'Issue Archive' %}</a></li>
+            </ul>
+          </span>
         </li>
       {% endif %}
 
@@ -59,7 +65,7 @@
         {% endif %}
       {% endfor %}
 
-      {% if journal_settings.general.enable_editorial_display %}
+{% if journal_settings.general.enable_editorial_display %}
         {% if journal_settings.general.multi_page_editorial %}
           <li>
             <span class="epc-nav-drop">
@@ -81,15 +87,19 @@
         {% endif %}
       {% endif %}
 
-      {% if request.journal.nav_sub %}
+      <li>
+        <a href="{% url 'cms_page' "author-guidelines" %}"{% if request.resolver_match.url_name == 'cms_page' and request.resolver_match.kwargs.url_name == 'author-guidelines' %} aria-current="page"{% endif %}>{% trans 'Guides' %}</a>
+      </li>
+
+{% if request.journal.nav_contact %}
         <li>
-          <a href="{% url 'journal_submissions' %}"{% if request.resolver_match.url_name == 'journal_submissions' %} aria-current="page"{% endif %}>{% trans 'Submission' %}</a>
+          <a href="{% url 'contact' %}"{% if request.resolver_match.url_name == 'contact' %} aria-current="page"{% endif %}>{% trans 'Contact' %}</a>
         </li>
       {% endif %}
 
-      {% if request.journal.nav_contact %}
+      {% if request.journal.nav_news %}
         <li>
-          <a href="{% url 'contact' %}"{% if request.resolver_match.url_name == 'contact' %} aria-current="page"{% endif %}>{% trans 'Contact' %}</a>
+          <a href="{% url 'core_news_list' %}"{% if request.resolver_match.url_name == 'core_news_list' %} aria-current="page"{% endif %}>{{ journal_settings.news.news_title }}</a>
         </li>
       {% endif %}
 

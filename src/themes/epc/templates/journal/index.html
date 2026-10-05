@@ -32,19 +32,27 @@
 
 <div class="epc-facts" role="list" aria-label="{% trans 'Journal facts' %}">
   <div class="epc-fact" role="listitem">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+    <span class="epc-fact-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 3v18M3 12h18"/></svg>
+    </span>
     <div><strong>{% trans "Open access" %}</strong><span>{% trans "Free to read from day one" %}</span></div>
   </div>
   <div class="epc-fact" role="listitem">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+    <span class="epc-fact-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M12 3l7 3v5c0 5-3.5 8-7 10-3.5-2-7-5-7-10V6z"/><path d="M9 12l2 2 4-4"/></svg>
+    </span>
     <div><strong>CC BY 4.0</strong><span>{% trans "Authors retain copyright" %}</span></div>
   </div>
   <div class="epc-fact" role="listitem">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2M12 11v6M9 14h6"/></svg>
+    <span class="epc-fact-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/><path d="M16 7V5a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2M12 11v6M9 14h6"/></svg>
+    </span>
     <div><strong>{% trans "No publication fees" %}</strong><span>{% trans "No APCs or hidden charges" %}</span></div>
   </div>
   <div class="epc-fact" role="listitem">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>
+    <span class="epc-fact-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>
+    </span>
     <div><strong>{% trans "Peer reviewed" %}</strong><span>{% trans "Independent expert review" %}</span></div>
   </div>
 </div>
@@ -53,14 +61,22 @@
   <div class="epc-card">
     <div class="epc-section">
       <div class="epc-split">
+        <div class="epc-about-cover">
+          {% if request.journal.default_large_image %}
+          <img src="{{ request.journal.default_large_image.url }}" alt="{% trans 'Journal cover' %}" loading="lazy" width="240" height="310">
+          {% else %}
+          <img src="{% static 'epc/img/envinova-journal-cover.png' %}" alt="{% trans 'Journal cover' %}" loading="lazy" width="240" height="310">
+          {% endif %}
+          <p class="epc-muted">{{ request.journal.name }}</p>
+        </div>
         <div>
           <p class="epc-kicker">{% trans "About this journal" %}</p>
           <p class="epc-lede" style="margin-top:12px;">
             <strong>{{ request.journal.name }}</strong>
             {% trans "publishes research across environmental processes, chemistry, remediation and treatment, and integrated environmental chemistry. We welcome experimental, field, and modelling studies that advance process understanding from molecular to landscape scales." %}
           </p>
-          <p style="margin-top:12px;">
-            <a class="epc-link-arrow" href="{% url 'cms_page' "aims-scope" %}">{% trans "Full aims and scope" %} &rarr;</a>
+          <p style="margin-top:16px;">
+            <a class="epc-btn epc-btn-outline" href="{% url 'cms_page' "aims-scope" %}">{% trans "Full aims and scope" %} <span aria-hidden="true">&rarr;</span></a>
           </p>
         </div>
         <div>
@@ -71,8 +87,8 @@
             <li><span class="epc-type-title">{% trans "Short Communications" %}</span><p>{% trans "Concise, novel findings, fast." %}</p></li>
             <li><span class="epc-type-title">{% trans "Perspectives" %}</span><p>{% trans "Forward-looking expert views." %}</p></li>
           </ul>
-          <p style="margin-top:12px;">
-            <a class="epc-link-arrow" href="{% url 'cms_page' "author-guidelines" %}">{% trans "Author guidelines" %} &rarr;</a>
+          <p style="margin-top:16px;">
+            <a class="epc-btn epc-btn-outline" href="{% url 'cms_page' "author-guidelines" %}">{% trans "Author guidelines" %} <span aria-hidden="true">&rarr;</span></a>
           </p>
         </div>
       </div>
@@ -88,20 +104,21 @@
       <div class="epc-grid-2">
         {% for article in request.journal.current_issue.get_sorted_articles|slice:":4" %}
         <article class="epc-article-card">
-          <div style="min-width:0;flex:1;">
-            <div>
+          <span class="epc-card-rule" aria-hidden="true"></span>
+          <div class="epc-article-body">
+            <div class="epc-article-meta">
               <span class="epc-tag">{{ article.section.name|default:"Research Article" }}</span>
-              {% if article.date_published %}<span class="epc-muted" style="margin-left:8px;font-size:12px;">{{ article.date_published|date:"M d, Y" }}</span>{% endif %}
+              {% if article.date_published %}<span class="epc-article-date">{{ article.date_published|date:"M d, Y" }}</span>{% endif %}
             </div>
             <h3><a href="{{ article.url }}">{{ article.title|safe }}</a></h3>
             <p class="epc-authors">{% for author in article.frozen_authors.all %}{{ author.full_name }}{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-            {% if article.abstract %}<p class="epc-abstract">{{ article.abstract|striptags|truncatewords:40 }}</p>{% endif %}
-            <p style="margin-top:12px;font-size:13px;">
-              <a href="{{ article.url }}" style="font-weight:600;color:var(--epc-primary);">{% trans "Read article" %}</a>
+            {% if article.abstract %}<p class="epc-abstract">{{ article.abstract|striptags|truncatewords:38 }}</p>{% endif %}
+            <div class="epc-article-foot">
+              <a class="epc-read-link" href="{{ article.url }}">{% trans "Read article" %} <span aria-hidden="true">&rarr;</span></a>
               {% if article.get_doi_url %}
-              <a href="{{ article.get_doi_url }}" target="_blank" rel="noopener noreferrer" class="epc-muted" style="margin-left:12px;">{{ article.get_doi }}</a>
+              <a class="epc-doi-chip" href="{{ article.get_doi_url }}" target="_blank" rel="noopener noreferrer">DOI</a>
               {% endif %}
-            </p>
+            </div>
           </div>
         </article>
         {% endfor %}
@@ -110,24 +127,33 @@
     {% endif %}
 
     <div class="epc-section">
-      <div class="epc-grid-2" style="margin-top:0;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));">
-        <div class="epc-scope-card" style="padding:20px;">
-          <p class="epc-kicker">{% trans "Journal information" %}</p>
-          <dl style="margin:12px 0 0;">
-            <div class="epc-kv"><dt>{% trans "ISSN" %}</dt><dd>{% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %}</dd></div>
-            <div class="epc-kv"><dt>{% trans "Frequency" %}</dt><dd>{% trans "Continuous" %}</dd></div>
-            <div class="epc-kv"><dt>{% trans "Licence" %}</dt><dd>CC BY 4.0</dd></div>
+      <div class="epc-grid-3">
+        <div class="epc-info-card">
+          <span class="epc-info-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5h16v14H4z"/><path d="M8 9h8M8 13h5"/></svg>
+          </span>
+          <h3>{% trans "Journal information" %}</h3>
+          <dl class="epc-kv">
+            <div><dt>{% trans "ISSN" %}</dt><dd>{% if request.journal.issn %}{{ request.journal.issn }}{% else %}{% trans "Pending Assignment" %}{% endif %}</dd></div>
+            <div><dt>{% trans "Frequency" %}</dt><dd>{% trans "Continuous" %}</dd></div>
+            <div><dt>{% trans "Licence" %}</dt><dd>CC BY 4.0</dd></div>
           </dl>
         </div>
-        <div class="epc-scope-card" style="padding:20px;">
-          <p class="epc-kicker">{% trans "For reviewers" %}</p>
-          <p class="epc-lede" style="margin-top:8px;font-size:15px;">{% trans "Reviewers are central to EPC. At least two reviewers per manuscript; constructive and timely feedback expected." %}</p>
-          <p style="margin-top:8px;"><a class="epc-link-arrow" href="{% url 'cms_page' "editorial-policies" %}">{% trans "Reviewer guidelines" %} &rarr;</a></p>
+        <div class="epc-info-card">
+          <span class="epc-info-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="9" r="6"/><path d="M8.5 14L7 22l5-3 5 3-1.5-8"/></svg>
+          </span>
+          <h3>{% trans "For reviewers" %}</h3>
+          <p>{% trans "Reviewers are central to the journal. At least two reviewers per manuscript; constructive and timely feedback expected." %}</p>
+          <a class="epc-read-link" href="{% url 'cms_page' "editorial-policies" %}">{% trans "Reviewer guidelines" %} <span aria-hidden="true">&rarr;</span></a>
         </div>
-        <div class="epc-scope-card" style="padding:20px;">
-          <p class="epc-kicker">{% trans "For authors" %}</p>
-          <p class="epc-lede" style="margin-top:8px;font-size:15px;">{% trans "Manuscripts are handled through our online submission system for secure peer review and editorial tracking." %}</p>
-          <p style="margin-top:8px;"><a class="epc-link-arrow" href="{% url 'journal_submissions' %}">{% trans "Start submission" %} &rarr;</a></p>
+        <div class="epc-info-card">
+          <span class="epc-info-icon" aria-hidden="true">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
+          </span>
+          <h3>{% trans "For authors" %}</h3>
+          <p>{% trans "Manuscripts are handled through our online submission system for secure peer review and editorial tracking." %}</p>
+          <a class="epc-read-link" href="{% url 'journal_submissions' %}">{% trans "Start submission" %} <span aria-hidden="true">&rarr;</span></a>
         </div>
       </div>
     </div>

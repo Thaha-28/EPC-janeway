@@ -2,6 +2,7 @@
 {% load press_url from press_url %}
 {% load svg from press_url %}
 {% load next_url %}
+{% load i18n %}
 
 {% load hijack %}
 
@@ -34,6 +35,18 @@
     {% endif %}
 </head>
 <body>
+
+{% if request.journal %}
+<div class="epc-backend-bar">
+  <div class="epc-backend-bar-inner">
+    <a class="epc-backend-home" href="{{ request.journal.site_url }}">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      {% trans "Journal Home" %}
+    </a>
+    <span class="epc-backend-journal">{{ request.journal.name }}</span>
+  </div>
+</div>
+{% endif %}
 
 {% block nav %}
     {% if request.journal %}

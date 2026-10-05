@@ -26,6 +26,10 @@
         <link href="{% static "OLH/css/journal" %}{{ request.journal.id }}_override.css" rel="stylesheet">
     {% elif request.press %}
         <link href="{% static "OLH/css/press_override.css" %}" rel="stylesheet">
+        <link href="{% static "epc/css/epc.css" %}" rel="stylesheet">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8,60,400;8,60,600;8,60,700&display=swap" rel="stylesheet">
     {% endif %}
 
     <script src="https://use.typekit.net/lff8ikn.js"></script>
@@ -54,6 +58,49 @@
 <body>
 {% include "common/elements/skip_to_main_content.html" %}
 <div class="wrapper">
+    {% if request.press and not request.journal and not request.repository %}
+    <header class="main-header epc-header">
+        <div class="epc-header-bar">
+            <a class="epc-brand" href="/" title="{% trans 'Home' %}">
+                <span class="epc-brand-mark epc-brand-mark--wide"><img class="epc-brand-logo" src="{% static 'epc/img/envinova-logo.png' %}" alt="{{ request.press.name }}"></span>
+                <span class="epc-brand-text">
+                    <span class="epc-brand-name">{% trans "EnviNova Scientific Publishing" %}</span>
+                </span>
+                <span class="sr-only">{% trans 'Home' %}</span>
+            </a>
+            <div class="epc-header-tools">
+                <div class="epc-account">
+                    {% if request.user.is_authenticated %}
+                        <span class="epc-nav-drop">
+                            <button type="button" class="epc-account-btn" aria-expanded="false" aria-haspopup="true" aria-controls="epc-press-account-menu">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>
+                                <span class="epc-account-name">{{ request.user.full_name }}</span>
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>
+                            </button>
+                            <ul class="epc-account-menu" id="epc-press-account-menu" hidden>
+                                <li><a href="{% url 'core_dashboard' %}">{% trans 'Dashboard' %}</a></li>
+                                {% if request.user.is_staff %}<li><a href="/admin/">{% trans 'Admin' %}</a></li>{% endif %}
+                                <li><a href="{% url 'core_edit_profile' %}">{% trans 'Profile' %}</a></li>
+                                <li><a href="{% url 'core_logout' %}">{% trans 'Logout' %}</a></li>
+                            </ul>
+                        </span>
+                    {% else %}
+                        <a class="epc-account-link" href="{% url 'core_login' %}">{% trans "Log in" %}</a>
+                        <a class="epc-btn epc-btn-dark epc-btn-sm" href="{% url 'core_register' %}">{% trans "Register" %}</a>
+                    {% endif %}
+                </div>
+                <button type="button" class="epc-icon-btn epc-hamburger" aria-expanded="false" aria-controls="epc-nav-list">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+                    <span class="sr-only">{% trans 'Menu' %}</span>
+                </button>
+            </div>
+        </div>
+        {% hook 'language_header' %}
+        {% block press_navbar %}
+            {% include "press/nav.html" %}
+        {% endblock press_navbar %}
+    </header>
+    {% else %}
     <header class="main-header">
         <div class="main top-bar">
             <div class="top-bar-left header-image-bar border-right">
@@ -182,6 +229,7 @@
             {% endif %}
         {% endblock navbar %}
     </header>
+    {% endif %}
 
     <main id="main-content">
         {% block body %}{% endblock body %}
@@ -189,6 +237,11 @@
 </div>
 
 
+{% if request.press and not request.journal and not request.repository %}
+<footer class="epc-footer">
+        {% include "press/elements/press_footer.html" %}
+</footer>
+{% else %}
 <footer class="main-footer row expanded">
         <div class="large-2 columns very-dark-primary-color text-center logo-wrapper">
             {% if request.journal.press_image_override %}
@@ -212,6 +265,7 @@
         {% include "press/elements/press_footer.html" %}
         {% endif %}
 </footer>
+{% endif %}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/foundation/6.5.1/js/foundation.min.js"></script>
 <script src="{% static "OLH/js/app.min.js" %}"></script>
@@ -253,6 +307,7 @@
 
 </script>
 {% include "common/elements/analytics.html" %}
+{% if request.press and not request.journal and not request.repository %}<script src="{% static "epc/js/epc.js" %}" defer></script>{% endif %}
 {% block js %}{% endblock %}
 </body>
 </html>

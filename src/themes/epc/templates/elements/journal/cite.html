@@ -7,7 +7,8 @@
      data-cite-doi="{% if article.identifier.id_type == 'doi' %}{{ article.identifier.identifier }}{% endif %}"
      data-cite-issn="{{ request.journal.issn }}"
      data-cite-publisher="{{ journal_settings.general.publisher_name }}"
-     data-cite-url="{{ request.build_absolute_uri }}">
+     data-cite-url="{{ request.build_absolute_uri }}"
+     data-cite-pk="{{ article.pk }}">
   <p class="epc-kicker">{% trans "How to cite" %}</p>
   <p class="epc-cite-text" data-cite-title style="display:none;">{{ article.title|striptags }}</p>
   <p class="epc-cite-text">
@@ -90,24 +91,38 @@
   }
   function copyText(btn, getText) {
     var done = function (ok) {
-      var label = ok ? "Copied" : "Copy failed";
       var orig = btn.getAttribute("data-orig") || btn.textContent;
       if (!btn.getAttribute("data-orig")) btn.setAttribute("data-orig", orig);
-      btn.textContent = label;
+      btn.textContent = ok ? "Copied" : "Copy failed";
       setTimeout(function () { btn.textContent = btn.getAttribute("data-orig"); }, 2000);
     };
     var t = getText();
-    if (navigator.clipboard && navigator.clipboard.writeText) {
-      navigator.clipboard.writeText(t).then(function () { done(true); }, function () { done(false); });
-    } else {
+    if (!t) { done(false); return; }
+    var fallback = function () {
       try {
         var ta = document.createElement("textarea");
-        ta.value = t; document.body.appendChild(ta); ta.select();
-        document.execCommand("copy"); ta.remove(); done(true);
+        ta.value = t;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.top = "-1000px";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        ta.setSelectionRange(0, t.length);
+        var ok = document.execCommand("copy");
+        ta.remove();
+        done(ok);
       } catch (e) { done(false); }
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(function () { done(true); }, fallback);
+    } else {
+      fallback();
     }
   }
-  function articlePk() {
+  function articlePk(box) {
+    var pk = box.getAttribute("data-cite-pk");
+    if (pk) return pk;
     var m = window.location.pathname.match(/(\d+)\/?$/);
     return m ? m[1] : "article";
   }
@@ -123,9 +138,9 @@
       var citeEl = box.querySelector("#cite-content");
       copyText(copyBtn, function () { return citeEl ? citeEl.textContent.trim() : ""; });
     } else if (risBtn) {
-      download(ris(d), "EPC-" + articlePk() + ".ris", "application/x-research-info-systems");
+      download(ris(d), "EPC-" + articlePk(box) + ".ris", "application/x-research-info-systems");
     } else if (bibBtn) {
-      download(bibtex(d, articlePk()), "EPC-" + articlePk() + ".bib", "application/x-bibtex");
+      download(bibtex(d, articlePk(box)), "EPC-" + articlePk(box) + ".bib", "application/x-bibtex");
     }
   });
 })();

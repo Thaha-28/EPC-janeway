@@ -95,7 +95,7 @@
                                     data-responsive-menu="dropdown">
                                     {% hook 'article_buttons' %}
                                     <li>
-                                        <a href="{{ article.local_url }}print/" title="{% trans 'Printer friendly version' %}" >
+                                        <a href="{% if article.identifier %}{% url 'article_print_article' article.identifier.id_type article.identifier.identifier %}{% else %}{{ article.local_url }}print/{% endif %}" target="_blank" rel="noopener" title="{% trans 'Printer friendly version' %}" >
                                             <i aria-hidden="true" class="fa fa-print">&nbsp;</i>
                                             <span class="sr-only">{% trans 'Printer friendly version.' %}</span>
                                         </a>
