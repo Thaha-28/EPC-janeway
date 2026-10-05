@@ -21,6 +21,9 @@
     <button type="button" class="epc-btn epc-btn-light" data-epc-copy-cite>{% trans "Copy citation" %}</button>
     <button type="button" class="epc-btn epc-btn-light" data-epc-dl-ris>{% trans "Download RIS" %}</button>
     <button type="button" class="epc-btn epc-btn-light" data-epc-dl-bibtex>{% trans "Download BibTeX" %}</button>
+    <a class="epc-btn epc-btn-light"
+       href="{% if article.identifier %}{% url 'article_print_article' article.identifier.id_type article.identifier.identifier %}{% else %}{{ article.local_url }}print/{% endif %}"
+       target="_blank" rel="noopener">{% trans "Print article" %}</a>
   </div>
   <p class="epc-muted" style="margin-top:8px;">{% trans "RIS imports into Zotero and Mendeley; BibTeX is for LaTeX." %}</p>
 </div>

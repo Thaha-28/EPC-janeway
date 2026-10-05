@@ -116,6 +116,15 @@ if journal.issn:
 if journal.print_issn:
     journal.print_issn = ''
     print('print issn cleared')
+# Absolute URLs (journal links on the press, article site_url) must be
+# https: Janeway builds them from Press/Journal.is_secure.
+if not press.is_secure:
+    press.is_secure = True
+    press.save()
+    print('press marked secure (https)')
+if not journal.is_secure:
+    journal.is_secure = True
+    print('journal marked secure (https)')
 from utils import setting_handler
 setting_handler.save_setting('general', 'publisher_name', journal, 'EnviNova Scientific Publishing')
 setting_handler.save_setting('general', 'publisher_url', journal, 'https://epc-journal.org')
