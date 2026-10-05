@@ -162,6 +162,9 @@ header.main-header {
   padding: 3px; background: var(--epc-card);
 }
 .epc-brand-mark img, .epc-brand-mark svg { max-height: 40px; max-width: 40px; width: auto; height: auto; object-fit: contain; }
+/* Wide lockup variant (icon + wordmark, ~2.93:1): let the box hug the artwork. */
+.epc-brand-mark--wide { width: auto; max-width: 132px; }
+.epc-brand-mark--wide img, .epc-brand-mark--wide svg { max-width: 124px; max-height: 40px; }
 .epc-brand-text { display: flex; flex-direction: column; min-width: 0; flex: 1 1 auto; }
 .epc-brand-name {
   font-family: var(--epc-serif); font-size: 1.2rem; font-weight: 700;
@@ -710,6 +713,8 @@ ul.timeline a, ul.timeline a:visited { color: var(--epc-primary); }
   .epc-header-bar { padding: 10px 12px; gap: 10px; }
   .epc-brand-mark { height: 42px; width: 42px; }
   .epc-brand-mark img, .epc-brand-mark svg { max-height: 34px; max-width: 34px; }
+  .epc-brand-mark--wide { width: auto; max-width: 110px; }
+  .epc-brand-mark--wide img, .epc-brand-mark--wide svg { max-width: 102px; max-height: 34px; }
   .epc-brand-name { font-size: 1rem; }
   .epc-brand-tagline { display: none; }
   .epc-header-tools { gap: 6px; }
@@ -736,6 +741,8 @@ ul.timeline a, ul.timeline a:visited { color: var(--epc-primary); }
   .epc-brand { gap: 8px; }
   .epc-brand-mark { height: 38px; width: 38px; }
   .epc-brand-mark img, .epc-brand-mark svg { max-height: 30px; max-width: 30px; }
+  .epc-brand-mark--wide { width: auto; max-width: 92px; }
+  .epc-brand-mark--wide img, .epc-brand-mark--wide svg { max-width: 84px; max-height: 30px; }
   .epc-brand-text { overflow: hidden; }
   .epc-brand-name {
     font-size: 0.9rem; line-height: 1.2; overflow-wrap: anywhere;

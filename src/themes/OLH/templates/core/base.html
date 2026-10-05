@@ -47,6 +47,9 @@
         <link  type="application/atom+xml" rel="alternate" title="News Feed for Journal" href="{% url 'rss_news' %}">
     {% endif %}
     {% include "common/elements/favicons.html" %}
+    {% if request.press and not request.press.favicon %}
+        <link rel="icon" href="{% static 'epc/img/envinova-logo.png' %}">
+    {% endif %}
 </head>
 <body>
 {% include "common/elements/skip_to_main_content.html" %}
@@ -71,18 +74,10 @@
                         {{ request.repository.name }}
                     {% endif %}
                 {% else %}
-                    {% if 'svg' in request.press_cover %}
-                        <a href="/">
-                            {% svg request.press_cover %}
-                            <span class="sr-only">{% trans 'Home' %}</span>
-                        </a>
-                    {% else %}
-                        {% get_alt_text obj=request.press.thumbnail_image default=request.press.name as press_logo_alt %}
-                        <a href="/">
-                            <img class="top-bar-image" src="{% url 'press_cover_download' %}" alt="{{ press_logo_alt }}">
-                            <span class="sr-only">{% trans 'Home' %}</span>
-                        </a>
-                    {% endif %}
+                    <a href="/">
+                        <img class="top-bar-image" src="{% static 'epc/img/envinova-logo.png' %}" alt="{{ request.press.name }}">
+                        <span class="sr-only">{% trans 'Home' %}</span>
+                    </a>
                 {% endif %}
             {% if request.journal  and journal_settings.styling.display_journal_title %}
             <div class="hide-for-medium-only{% if journal_settings.general.switch_language %} border-right{% endif %}" id="journal-title">
@@ -201,7 +196,7 @@
                 {% svg_or_image request.journal.press_image_override alt_text=press_alt %}
             {% elif 'svg' in request.press_cover %}
                 <a href="{% press_url request %}" title="{{ request.press.name }}">
-                    {% svg request.press_cover %}
+                    <img src="{% static 'epc/img/envinova-logo.png' %}" alt="{{ request.press.name }}">
                     <span class="sr-only"> {{ request.press.name }}</span>
                 </a>
             {% else %}

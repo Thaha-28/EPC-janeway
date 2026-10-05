@@ -28,7 +28,7 @@
                                             {% else %}
                                             <a href="{{ current_journal.site_url }}">
                                             {% endif %}
-                                                <img src="{% if current_journal.default_cover_image %}{{ current_journal.default_cover_image.url }}{% endif %}"
+                                                <img src="{% if current_journal.default_cover_image %}{{ current_journal.default_cover_image.url }}{% else %}{% static 'epc/img/envinova-journal-cover.png' %}{% endif %}"
                                                      alt="{% if current_journal.name != " " and current_journal.name != "" %}{{ current_journal.name }}{% else %}Unnamed Journal{% endif %}">
                                             </a>
                                         </div>

@@ -49,6 +49,9 @@
         <link  type="application/atom+xml" rel="alternate" title="News Feed for Journal" href="{% url 'rss_news' %}">
     {% endif %}
     {% include "common/elements/favicons.html" %}
+    {% if request.journal and not request.journal.favicon %}
+        <link rel="icon" href="{% static 'epc/img/envinova-logo.png' %}">
+    {% endif %}
 </head>
 <body>
 {% include "common/elements/skip_to_main_content.html" %}
@@ -59,11 +62,10 @@
             <a class="epc-brand" href="{{ request.journal.site_url }}" title="{% trans 'Home' %}">
                 {% if request.journal.header_image %}
                     {% get_alt_text file_path=request.journal.header_image default=request.journal.name as header_alt_text %}
-                    <span class="epc-brand-mark">{% svg_or_image request.journal.header_image css_class='epc-brand-logo' alt_text=header_alt_text %}</span>
-                {% endif %}
+                    {% endif %}
+                <span class="epc-brand-mark epc-brand-mark--wide"><img class="epc-brand-logo" src="{% static 'epc/img/envinova-logo.png' %}" alt="{% if request.journal.header_image %}{{ header_alt_text }}{% else %}{{ request.journal.name }}{% endif %}"></span>
                 <span class="epc-brand-text">
-                    <span class="epc-brand-name">{{ request.journal.name }}</span>
-                    <span class="epc-brand-tagline">{% trans "Peer reviewed open access journal" %}</span>
+                    <span class="epc-brand-name">{% trans "EnviNova Scientific Publishing" %}</span>
                 </span>
                 <span class="sr-only">{% trans 'Home' %}</span>
             </a>
