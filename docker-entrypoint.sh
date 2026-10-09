@@ -162,15 +162,23 @@ if not journal.press_image_override or not _op.exists(journal.press_image_overri
     journal.press_image_override.save('epc-logo.svg', _ContentFile(_svg), save=True)
     print('journal footer image set')
 # Journal cover art (the book image used on journal and press pages).
+# Sync whenever the committed asset differs from the stored image so theme
+# updates propagate on deploy (not just the first time a cover is set).
+import hashlib as _hashlib
 _cover_src = 'src/themes/epc/assets/img/envinova-journal-cover.png'
 if not _op.exists(_cover_src):
     print('WARNING: journal cover art missing at ' + _cover_src)
 else:
     with open(_cover_src, 'rb') as _cf:
         _cover_bytes = _cf.read()
+    _cover_hash = _hashlib.sha256(_cover_bytes).hexdigest()
     for _field in ('default_large_image', 'default_cover_image'):
         _current = getattr(journal, _field, None)
-        if not _current or not _op.exists(_current.path):
+        _up_to_date = False
+        if _current and _op.exists(_current.path):
+            with open(_current.path, 'rb') as _ef:
+                _up_to_date = _hashlib.sha256(_ef.read()).hexdigest() == _cover_hash
+        if not _up_to_date:
             if _current:
                 _current.delete(save=False)
             getattr(journal, _field).save('envinova-journal-cover.png', _ContentFile(_cover_bytes), save=True)
