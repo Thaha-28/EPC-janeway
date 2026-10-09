@@ -104,6 +104,31 @@ class ArticleSerializer(serializers.HyperlinkedModelSerializer):
     galleys = GalleySerializer(source="galley_set", many=True)
 
 
+class ArticleDetailSerializer(ArticleSerializer):
+    """Article detail adds the rendered full text of the best galley.
+
+    The list endpoint deliberately omits this field so it stays lightweight;
+    the frontend reads it when rendering a single article page.
+    """
+
+    content = serializers.SerializerMethodField()
+
+    class Meta(ArticleSerializer.Meta):
+        fields = ArticleSerializer.Meta.fields + ("content",)
+
+    def get_content(self, obj):
+        from journal import logic as journal_logic
+
+        try:
+            galleys = obj.galley_set.filter(public=True)
+            galley = journal_logic.get_best_galley(obj, galleys)
+            if galley:
+                return galley.file_content(recover=True)
+        except Exception:
+            return None
+        return None
+
+
 class PreprintSubjectSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = repository_models.Subject

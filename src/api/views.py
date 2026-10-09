@@ -147,6 +147,11 @@ class ArticleViewSet(viewsets.ModelViewSet):
     serializer_class = serializers.ArticleSerializer
     http_method_names = ["get"]
 
+    def get_serializer_class(self):
+        if self.action == "retrieve":
+            return serializers.ArticleDetailSerializer
+        return serializers.ArticleSerializer
+
     def get_queryset(self):
         if self.request.journal:
             queryset = submission_models.Article.objects.filter(
